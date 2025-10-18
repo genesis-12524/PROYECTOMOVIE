@@ -1,0 +1,11 @@
+bin/
+obj/
+out/
+Debug/
+Release/
+publish/
+*.exe
+*.dll
+*.log
+*.db
+*.pdb
