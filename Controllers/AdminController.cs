@@ -22,6 +22,10 @@ namespace PROYECTOMOVIE.Controllers
         public IActionResult Index()
         {
             return View();
-        }        
+        } 
+        public IActionResult Peliculas()
+        {
+            return View();
+        }         
     }
 }

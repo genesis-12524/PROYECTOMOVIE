@@ -11,8 +11,8 @@ using PROYECTOMOVIE.Data;
 namespace PROYECTOMOVIE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251017211839_SeedData")]
-    partial class SeedData
+    [Migration("20251018183459_Mi8vamigracion")]
+    partial class Mi8vamigracion
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,22 +44,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            ConcurrencyStamp = "1",
-                            Name = "Administrador",
-                            NormalizedName = "ADMINISTRADOR"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            ConcurrencyStamp = "2",
-                            Name = "Cliente",
-                            NormalizedName = "CLIENTE"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -143,13 +127,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "admin-id-123",
-                            RoleId = "1"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -169,6 +146,49 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Pelicula", b =>
+                {
+                    b.Property<int>("Id_Peli")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descripción")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Enlace_Peli")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Fecha_Publicada")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Genero")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Imagen_Peli")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nombre_Peli")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan>("Tiempo_Duracion")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Video_Trailer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id_Peli");
+
+                    b.ToTable("t_Pelicula");
                 });
 
             modelBuilder.Entity("PROYECTOMOVIE.Models.Usuario", b =>
@@ -246,27 +266,33 @@ namespace PROYECTOMOVIE.Data.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("t_usuario", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "admin-id-123",
-                            AccessFailedCount = 0,
-                            Apellido = "--------",
-                            ConcurrencyStamp = "ea1b2b8f-fe2a-48e0-9024-e25d2ae79d9e",
-                            Email = "admin12345@movie.com",
-                            EmailConfirmed = true,
-                            FechaRegistro = new DateTime(2025, 10, 17, 16, 18, 37, 970, DateTimeKind.Local).AddTicks(1308),
-                            LockoutEnabled = false,
-                            Nombre = "Administrador Principal",
-                            NormalizedEmail = "ADMIN@MOVIE.COM",
-                            NormalizedUserName = "ADMIN@MOVIE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAECqiAZXuMe4yGqYBzqQaKaBMYhCrRV4a1IQX9zwqtgT6N8e+6/hhX+NTsEdl9Y/8mA==",
-                            PhoneNumberConfirmed = true,
-                            SecurityStamp = "c384a30f-131b-4e1b-820c-caf6a8a86c07",
-                            TwoFactorEnabled = false,
-                            UserName = "admin@movie.com"
-                        });
+            modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioPelicula", b =>
+                {
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PeliculaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Calificacion")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("EsFavorita")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaAgregada")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Vista")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UsuarioId", "PeliculaId");
+
+                    b.HasIndex("PeliculaId");
+
+                    b.ToTable("t_UsuarioPelicula");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -318,6 +344,35 @@ namespace PROYECTOMOVIE.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioPelicula", b =>
+                {
+                    b.HasOne("PROYECTOMOVIE.Models.Pelicula", "Pelicula")
+                        .WithMany("UsuarioPeliculas")
+                        .HasForeignKey("PeliculaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PROYECTOMOVIE.Models.Usuario", "Usuario")
+                        .WithMany("UsuarioPeliculas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pelicula");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Pelicula", b =>
+                {
+                    b.Navigation("UsuarioPeliculas");
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Usuario", b =>
+                {
+                    b.Navigation("UsuarioPeliculas");
                 });
 #pragma warning restore 612, 618
         }

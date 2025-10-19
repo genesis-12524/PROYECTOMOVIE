@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using PROYECTOMOVIE.Data;
 using PROYECTOMOVIE.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using CloudinaryDotNet;
+using PROYECTOMOVIE.interfaze;
+using PROYECTOMOVIE.Models.config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configuración de Identity con tu modelo Usuario - MODIFICADO
 builder.Services.AddIdentity<Usuario, IdentityRole>(options => 
@@ -33,8 +35,21 @@ builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders(); // ← AGREGAR ESTA LÍNEA
 
-// AGREGAR ESTO: Servicio de email dummy para desarrollo
-builder.Services.AddTransient<IEmailSender, DummyEmailSender>();
+// Configuración de Cloudinary
+var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");
+builder.Services.Configure<CloudinarySettings>(cloudinarySettings); // Asegúrate de tener la clase CloudinarySettings definida
+
+// Agregar Cloudinary como singleton (ya lo tenías)
+var account = new Account(
+    cloudinarySettings["CloudName"],
+    cloudinarySettings["ApiKey"],
+    cloudinarySettings["ApiSecret"]
+);
+builder.Services.AddSingleton(new Cloudinary(account));
+
+// Agregar nuestro servicio CloudinaryService
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>(); // Asegúrate de tener estas interfaces y clases definidas
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -71,26 +86,3 @@ app.MapRazorPages()
    .WithStaticAssets();
 
 app.Run();
-
-// AGREGAR ESTA CLASE: Implementación dummy de IEmailSender
-public class DummyEmailSender : IEmailSender
-{
-    private readonly ILogger<DummyEmailSender> _logger;
-
-    public DummyEmailSender(ILogger<DummyEmailSender> logger)
-    {
-        _logger = logger;
-    }
-
-    public Task SendEmailAsync(string email, string subject, string htmlMessage)
-    {
-        // En desarrollo, solo logueamos la información en lugar de enviar email
-        _logger.LogInformation("=== EMAIL SIMULADO ===");
-        _logger.LogInformation($"Para: {email}");
-        _logger.LogInformation($"Asunto: {subject}");
-        _logger.LogInformation($"Mensaje: {htmlMessage}");
-        _logger.LogInformation("=== FIN EMAIL SIMULADO ===");
-        
-        return Task.CompletedTask;
-    }
-}

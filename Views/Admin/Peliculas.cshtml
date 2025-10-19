@@ -1,0 +1,321 @@
+@{
+    ViewData["Title"] = "Subir Nueva Película";
+}
+
+<div class="container mt-4">
+    <h2>Subir Nueva Película</h2>
+    
+    <form id="uploadForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Información básica -->
+                <div class="mb-3">
+                    <label for="Nombre_Peli" class="form-label">Nombre de la Película *</label>
+                    <input type="text" class="form-control" id="Nombre_Peli" name="Nombre_Peli" required>
+                    <div class="invalid-feedback">
+                        Por favor ingresa el nombre de la película.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Descripción" class="form-label">Descripción *</label>
+                    <textarea class="form-control" id="Descripción" name="Descripción" rows="3" required></textarea>
+                    <div class="invalid-feedback">
+                        Por favor ingresa una descripción.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Genero" class="form-label">Género *</label>
+                    <input type="text" class="form-control" id="Genero" name="Genero" required>
+                    <div class="invalid-feedback">
+                        Por favor ingresa el género.
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="Tiempo_Duracion" class="form-label">Duración (HH:MM:SS) *</label>
+                            <input type="text" class="form-control" id="Tiempo_Duracion" name="Tiempo_Duracion" 
+                                   placeholder="01:30:00" pattern="\d{2}:\d{2}:\d{2}" required>
+                            <div class="invalid-feedback">
+                                Formato: HH:MM:SS (ej: 01:30:00)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="Fecha_Publicada" class="form-label">Fecha de Publicación *</label>
+                            <input type="date" class="form-control" id="Fecha_Publicada" name="Fecha_Publicada" required>
+                            <div class="invalid-feedback">
+                                Por favor selecciona una fecha.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Archivos -->
+                <div class="mb-3">
+                    <label for="ImagenFile" class="form-label">Imagen de la Película *</label>
+                    <input type="file" class="form-control" id="ImagenFile" name="ImagenFile" 
+                           accept="image/*" required>
+                    <div class="form-text">Formatos: JPG, PNG, GIF, WEBP (Máx: 10MB)</div>
+                    <div class="invalid-feedback">
+                        Por favor selecciona una imagen.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="TrailerFile" class="form-label">Trailer *</label>
+                    <input type="file" class="form-control" id="TrailerFile" name="TrailerFile" 
+                           accept="video/*" required>
+                    <div class="form-text">Formatos: MP4, MOV, AVI, etc. (Máx: 50MB)</div>
+                    <div class="invalid-feedback">
+                        Por favor selecciona el trailer.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="PeliculaFile" class="form-label">Película Completa *</label>
+                    <input type="file" class="form-control" id="PeliculaFile" name="PeliculaFile" 
+                           accept="video/*" required>
+                    <div class="form-text">Formatos: MP4, MOV, AVI, etc. (Máx: 500MB)</div>
+                    <div class="invalid-feedback">
+                        Por favor selecciona la película completa.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <span id="submitText">Subir Película</span>
+                <div id="submitSpinner" class="spinner-border spinner-border-sm d-none" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
+        </div>
+    </form>
+
+    <!-- Mensajes de resultado -->
+    <div id="successAlert" class="alert alert-success d-none" role="alert"></div>
+    <div id="errorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+    <!-- Lista de películas -->
+    <div class="mt-5">
+        <h3>Películas Existentes</h3>
+        <button type="button" class="btn btn-outline-primary mb-3" onclick="cargarPeliculas()">
+            Actualizar Lista
+        </button>
+        <div id="peliculasList" class="row">
+            <!-- Las películas se cargarán aquí -->
+        </div>
+    </div>
+</div>
+<video controls style="max-width: 100%; height: auto;">
+  <source src="https://res.cloudinary.com/dbepsvbsk/video/upload/v1760831413/peliculas-trailers/rp2lvjjiu6ctvrcagc5v.mp4" type="video/mp4">
+  Tu navegador no soporta el elemento de video.
+</video>
+
+@section Scripts {
+<script>
+    // Manejar envío del formulario
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!this.checkValidity()) {
+            e.stopPropagation();
+            this.classList.add('was-validated');
+            return;
+        }
+
+        // Mostrar spinner y deshabilitar botón
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const submitSpinner = document.getElementById('submitSpinner');
+        
+        submitBtn.disabled = true;
+        submitText.textContent = 'Subiendo...';
+        submitSpinner.classList.remove('d-none');
+
+        // Ocultar alertas anteriores
+        document.getElementById('successAlert').classList.add('d-none');
+        document.getElementById('errorAlert').classList.add('d-none');
+
+        const formData = new FormData();
+        formData.append('Nombre_Peli', document.getElementById('Nombre_Peli').value);
+        formData.append('Descripción', document.getElementById('Descripción').value);
+        formData.append('Genero', document.getElementById('Genero').value);
+        formData.append('Tiempo_Duracion', document.getElementById('Tiempo_Duracion').value);
+        formData.append('Fecha_Publicada', document.getElementById('Fecha_Publicada').value);
+        formData.append('ImagenFile', document.getElementById('ImagenFile').files[0]);
+        formData.append('TrailerFile', document.getElementById('TrailerFile').files[0]);
+        formData.append('PeliculaFile', document.getElementById('PeliculaFile').files[0]);
+
+        try {
+            const response = await fetch('/api/peliculas/crear-pelicula', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                mostrarExito('Película subida exitosamente! ID: ' + result.id);
+                limpiarFormulario();
+                cargarPeliculas(); // Recargar la lista
+            } else {
+                const error = await response.text();
+                mostrarError('Error: ' + error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error de conexión: ' + error.message);
+        } finally {
+            // Restaurar botón
+            submitBtn.disabled = false;
+            submitText.textContent = 'Subir Película';
+            submitSpinner.classList.add('d-none');
+        }
+    });
+
+    // Función para mostrar éxito
+    function mostrarExito(mensaje) {
+        const alert = document.getElementById('successAlert');
+        alert.textContent = mensaje;
+        alert.classList.remove('d-none');
+    }
+
+    // Función para mostrar error
+    function mostrarError(mensaje) {
+        const alert = document.getElementById('errorAlert');
+        alert.textContent = mensaje;
+        alert.classList.remove('d-none');
+    }
+
+    // Función para limpiar el formulario
+    function limpiarFormulario() {
+        document.getElementById('uploadForm').reset();
+        document.getElementById('uploadForm').classList.remove('was-validated');
+        document.getElementById('successAlert').classList.add('d-none');
+        document.getElementById('errorAlert').classList.add('d-none');
+    }
+
+    // Función para cargar y mostrar películas
+    async function cargarPeliculas() {
+        try {
+            const response = await fetch('/api/peliculas/todas-peliculas');
+            if (response.ok) {
+                const peliculas = await response.json();
+                mostrarPeliculas(peliculas);
+            } else {
+                mostrarError('Error al cargar las películas');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error de conexión al cargar películas');
+        }
+    }
+
+    // Función para mostrar películas en la lista
+    function mostrarPeliculas(peliculas) {
+        const container = document.getElementById('peliculasList');
+        
+        if (peliculas.length === 0) {
+            container.innerHTML = '<div class="col-12"><p>No hay películas registradas.</p></div>';
+            return;
+        }
+
+        container.innerHTML = peliculas.map(pelicula => `
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="${pelicula.imagen_Peli}" class="card-img-top" alt="${pelicula.nombre_Peli}" 
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">${pelicula.nombre_Peli}</h5>
+                        <p class="card-text">${pelicula.descripción.substring(0, 100)}...</p>
+                        <p class="card-text"><small class="text-muted">Género: ${pelicula.genero}</small></p>
+                        <p class="card-text"><small class="text-muted">Duración: ${pelicula.tiempo_Duracion}</small></p>
+                        <p class="card-text"><small class="text-muted">Fecha: ${new Date(pelicula.fecha_Publicada).toLocaleDateString()}</small></p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-sm btn-outline-primary" onclick="verPelicula(${pelicula.id})">
+                            Ver Detalles
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarPelicula(${pelicula.id})">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Función para ver detalles de una película
+    async function verPelicula(id) {
+        try {
+            const response = await fetch(`/api/peliculas/${id}`);
+            if (response.ok) {
+                const pelicula = await response.json();
+                alert(`Detalles de: ${pelicula.nombre_Peli}\n\nDescripción: ${pelicula.descripción}\nGénero: ${pelicula.genero}\nDuración: ${pelicula.tiempo_Duracion}`);
+            } else {
+                mostrarError('Error al cargar los detalles');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error de conexión');
+        }
+    }
+
+    // Función para eliminar una película
+    async function eliminarPelicula(id) {
+        if (!confirm('¿Estás seguro de que quieres eliminar esta película?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/peliculas/eliminar/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                mostrarExito('Película eliminada exitosamente');
+                cargarPeliculas(); // Recargar lista
+            } else {
+                const error = await response.text();
+                mostrarError('Error al eliminar: ' + error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error de conexión al eliminar');
+        }
+    }
+
+    // Cargar películas al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarPeliculas();
+        
+        // Establecer fecha actual por defecto
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('Fecha_Publicada').value = today;
+    });
+</script>
+
+<style>
+    .card-img-top {
+        transition: transform 0.3s ease;
+    }
+    .card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    .form-control:valid {
+        border-color: #198754;
+    }
+    .form-control:invalid {
+        border-color: #dc3545;
+    }
+</style>
+}
