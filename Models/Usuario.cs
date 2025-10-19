@@ -42,10 +42,7 @@ namespace PROYECTOMOVIE.Models
 
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
-
-
         
-
-        
+        public virtual ICollection<UsuarioPelicula>? UsuarioPeliculas { get; set; }
     }
 }
