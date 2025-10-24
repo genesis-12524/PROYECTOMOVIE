@@ -12,7 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<Usuario>
     {
 
     }
- public DbSet<Pelicula> Peliculas { get; set; }
+        public DbSet<Pelicula> Peliculas { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
