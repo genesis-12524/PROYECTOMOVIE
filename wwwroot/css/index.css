@@ -1,0 +1,473 @@
+/* ---------------------------------- */
+/* 1. Variables y Reset               */
+/* ---------------------------------- */
+:root{
+    --bg-dark: #000000;
+    --panel: rgba(10,12,14,0.6);
+    --accent: #00A8E1;
+    --accent-2: #ffffff;
+    --muted: #9aa4ad;
+    --light: #ffffff;
+    --glass: rgba(255,255,255,0.04);
+    --max-width: 1200px;
+    
+    /* Variable para tu sección azul */
+    --brand-teal: #008c9e; 
+}
+
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--light);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+/* Global container helper */
+.container{
+    max-width:var(--max-width);
+    margin:0 auto;
+    padding:0 20px;
+}
+
+/* ---------------------------------- */
+/* 2. Header / Navbar                 */
+/* ---------------------------------- */
+.header{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:1000;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, rgba(2, 2, 2, 0.141), rgba(10, 12, 14, 0.053));
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Espacio para evitar solapado del header */
+main{
+    padding-top: 60px; /* Altura del header */
+}
+
+/* Logo */
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:20px;
+    color:var(--accent);
+}
+.logo i{ color: var(--accent-2); }
+
+/* Links */
+.nav-links{
+    display:flex;
+    gap:14px;
+    align-items:right;
+    padding-left: 750px;
+}
+.nav-links a{
+    color:var(--muted);
+    text-decoration:none;
+    font-size:15px;
+    transition:color .18s, transform .18s;
+}
+.nav-links a.nav-active, .nav-links a:hover{
+    color:var(--light);
+    transform:translateY(-1px);
+    font-weight:600;
+}
+
+/* Acciones / avatar / botones */
+.nav-actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+}
+.btn-login{
+    background:var(--accent);
+    color:var(--light);
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:background .15s, transform .12s;
+}
+.btn-login:hover{ background:#006b96; transform:translateY(-1px) }
+
+.avatar{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--glass);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;
+    font-size:16px;
+}
+/* ---------------------------------- */
+/* 7. Estilos del Hero Slider (NUEVO) */
+/* ---------------------------------- */
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slide {
+    position: absolute;
+    /* inset: 0; es igual a top:0, left:0, right:0, bottom:0 */
+    inset: 0; 
+    width: 100%;
+    height: 100%;
+    
+    /* Ocultos por defecto */
+    opacity: 0;
+    visibility: hidden;
+    
+    /* Efecto de fundido (fade) */
+    transition: opacity 0.8s ease-in-out;
+
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 40px;
+}
+
+.hero-slide.active {
+    /* El slide visible */
+    opacity: 1;
+    visibility: visible;
+    z-index: 5; /* Se pone por encima de otros slides */
+}
+
+/* Los elementos .hero-background y .hero-content 
+   ya están dentro de .hero-slide, así que 
+   sus estilos anteriores funcionan perfecto. */
+
+
+/* Botones de Navegación del Slider */
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10; /* Por encima de los slides */
+    
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.slider-nav:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.slider-nav.prev {
+    left: 40px; /* Espacio desde la izquierda */
+}
+
+.slider-nav.next {
+    right: 40px; /* Espacio desde la derecha */
+}
+
+@media (max-width: 768px) {
+    .slider-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    .slider-nav.prev { left: 15px; }
+    .slider-nav.next { right: 15px; }
+}
+/* ---------------------------------- */
+/* 3. Hero Section (Inicio)           */
+/* ---------------------------------- */
+.hero-section {
+    position: relative;
+    height: 75vh;
+    color: var(--light);
+    margin-top: -58px; /* Tira de la sección hacia arriba para que quede DETRÁS del header */
+    width: 100%;
+    overflow: hidden;
+
+    /* --- AÑADE ESTO PARA "ROMPER" EL CONTENEDOR DE BOOTSTRAP --- */
+    width: 100vw; /* 100% del ANCHO DE LA PANTALLA (Viewport Width) */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.hero-background {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.hero-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
+}
+
+.hero-background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* <- La propiedad clave para que llene el espacio */
+    filter: brightness(0.6); /* <- Mantiene el mismo filtro oscuro */
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(90deg, rgba(15,23,30,0.95) 0%, rgba(15,23,30,0.6) 55%, rgba(15,23,30,0.0) 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
+    margin-left: 105px;
+
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.hero-description {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    max-width: 90%;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-watch {
+    background: var(--accent);
+    color: var(--light);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s;
+}
+.btn-watch:hover {
+    background: #006b96;
+}
+
+.btn-icon-action {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all .18s;
+    /* --- AÑADE ESTAS 3 LÍNEAS PARA CENTRAR --- */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-icon-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.trial-text {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 12px;
+}
+
+/* ---------------------------------- */
+/* 4. Bloque de Búsqueda (NUEVO)      */
+/* ---------------------------------- */
+.search-block-section {
+    background-color: black; /* Tu color azul */
+    padding: 50px 20px;
+    text-align: center;
+
+    /* --- AÑADE ESTO AQUÍ TAMBIÉN --- */
+    width: 100vw; 
+    position: relative; /* Necesario para que left/transform funcionen */
+    left: 50%;
+    transform: translateX(-50%);
+    /* --- FIN DEL HACK --- */
+}
+
+.search-block-section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--light);
+    margin-bottom: 24px;
+}
+
+.search-block-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 550px;
+}
+
+.search-block-input {
+    width: 100%;
+    padding: 15px 45px 15px 25px; /* Espacio para la 'x' */
+    border: none;
+    border-radius: 50px; /* Bordes redondeados */
+    font-size: 16px;
+    color: #333;
+    outline: none;
+}
+
+.search-clear-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.btn-aleatorio {
+    width: 100%;
+    max-width: 550px;
+    background-color: #222; /* Color oscuro del botón */
+    color: var(--light);
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-aleatorio:hover {
+    background-color: #333;
+}
+
+
+/* ---------------------------------- */
+/* 5. Filas de Contenido (Ajustado)   */
+/* ---------------------------------- */
+.content-area{
+    padding: 40px 0 80px; /* Espacio arriba y abajo */
+}
+.content-row{
+    margin-bottom: 40px; /* Espacio entre filas */
+}
+
+.row-title{
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0px; /* Alineado con el padding del .container */
+}
+.row-title a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+}
+.row-title a:hover {
+    text-decoration: underline;
+}
+
+/* Posters container */
+.posters-container{
+    display:flex;
+    gap: 12px;
+    overflow-x:auto;
+    padding: 0 20px 8px 20px; /* Padding lateral */
+    -ms-overflow-style:none;scrollbar-width:none;
+}
+.posters-container::-webkit-scrollbar{display:none}
+
+/* Poster card */
+.poster-card{
+    min-width: 300px; 
+    height: 170px;
+    flex:0 0 auto;border-radius:10px;overflow:hidden;position:relative;cursor:pointer;
+    transition:transform .25s cubic-bezier(.2,.9,.3,1), box-shadow .25s;
+    background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.45));
+}
+.poster-card img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Hover immersive effect */
+.poster-card:hover{
+    transform:scale(1.15); /* Efecto hover más sutil */
+    z-index:60;
+    box-shadow:0 18px 40px rgba(0,0,0,0.6);
+}
+
+/* Poster info (se muestra al hacer hover) */
+.poster-info{
+    display: none;
+    flex-direction:column;gap:8px;align-items:flex-start;
+    position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg, transparent, rgba(0,0,0,0.9));padding:12px;
+    color:var(--light);font-size:14px;
+}
+.poster-card:hover .poster-info {
+    display: flex;
+}
+.poster-info .title{font-weight:700}
+
+
+/* ---------------------------------- */
+/* 6. Responsive (Simplificado)       */
+/* ---------------------------------- */
+@media (max-width:768px){
+    .header{padding:10px 14px}
+    main{padding-top: 60px;}
+    .nav-links{display:none}
+    .logo{font-size:18px}
+    .hero-title{font-size:32px}
+    
+    .search-block-section h2 { font-size: 26px; }
+
+    .poster-card:hover{transform:scale(1.1);z-index:30}
+    .poster-card{min-width:220px;height:124px}
+}
+
+.footer {
+    border-top: none !important;
+}
