@@ -1,6 +1,343 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WatchLenn</title>
 
-<p>;b</p>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+</head>
+<body>
 
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="#" class="nav-active">Inicio</a>
+            <a href="#">Películas</a>
+            <a href="#">Series</a>
+            <a href="#">Popular</a>
+        </nav>
+        <div class="nav-actions">
+            <button class="btn-login">Crea tu historia</button>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-login">Suscribirse</button>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            
+            <div class="slider-container">
+
+                <div class="hero-slide active">
+                    <div class="hero-background">
+                        <video 
+                            poster="IMG/img pelis/avatar.jpeg" 
+                            autoplay 
+                            muted 
+                            loop 
+                            playsinline>
+                            
+                            <source src="~/Video/avatar 3 trailer.mp4 " type="video/mp4">
+                            Tu navegador no soporta el tag de video.
+                        </video>
+                    </div>
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content container">
+                        <h1 class="hero-title">AVATAR 3: Fire and Ash</h1>
+                        <p class="hero-description">
+                            Próximamente en 2024: Sumérgete en el mundo de Pandora una vez más con "Avatar 3: Fire and Ash", la esperada continuación de la saga épica de ciencia ficción dirigida por James Cameron.
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn-watch">
+                                <i class="fa-solid fa-play"></i>
+                                Próximamente en Disney+
+                            </button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
+
+                            <button class="btn-icon-action mute-toggle">
+                                <i class="fa-solid fa-volume-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="trial-text">o ... comienza tu prueba gratis de 7 días</div>
+                    </div>
+                </div>
+
+                <div class="hero-slide">
+                    <div class="hero-background">
+                        <img src="IMG/img pelis/together.png" alt="Together">
+                    </div>
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content container">
+                        <h1 class="hero-title">Together</h1>
+                        <p class="hero-description">
+                            Tras mudarse al campo en busca de una nueva vida, una pareja comienza a experimentar fenómenos sobrenaturales que no solo alteran su vínculo, sino también su percepción de la relación... y de sí mismos.
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn-watch">
+                                <i class="fa-solid fa-play"></i>
+                                Ver en Amazon Prime
+                            </button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
+                        </div>
+                        <div class="trial-text">Incluido con tu suscripción</div>
+                    </div>
+                </div>
+
+                <div class="hero-slide">
+                    <div class="hero-background">
+                        <img src="IMG/img pelis/elio.jpg" alt="Elio">
+                    </div>
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content container">
+                        <h1 class="hero-title">Elio</h1>
+                        <p class="hero-description">
+                            En esta aventura cósmica llena de diversión y acción, Elio, un fanático del espacio con una imaginación muy activa, es teletransportado a una organización interplanetaria con miembros de galaxias lejanas. Identificado erróneamente por el líder de la Tierra, Elio debe forjar lazos con formas de vida extraterrestre, evitar una crisis intergaláctica y descubrir quién es y cuál es su lugar.
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn-watch">
+                                <i class="fa-solid fa-play"></i>
+                                Ver en Disney+
+                            </button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
+                        </div>
+                        <div class="trial-text">Incluido con tu suscripción</div>
+                    </div>
+                </div>
+
+            </div> <button class="slider-nav prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="slider-nav next"><i class="fa-solid fa-chevron-right"></i></button>
+            
+        </section>
+
+        <section class="search-block-section">
+            <div class="container">
+                <h2>¿No sabes qué ver?</h2>
+                <div class="search-block-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" placeholder="Buscar" class="search-block-input">
+                        <i class="fa-solid fa-xmark search-clear-icon"></i>
+                    </div>
+                    <button class="btn-aleatorio">Modo Aleatorio</button>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="content-area container">
+
+            <section class="content-row">
+                <h2 class="row-title">
+                    <span>Añadidas recientemente</span>
+                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+                </h2>
+                <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/together.png" alt="Together">
+                        <div class="poster-info">
+                            <div class="title">Together</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/elio.jpg" alt="Elio">
+                        <div class="poster-info">
+                            <div class="title">Elio</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/caminaomuere.jpeg" alt="Camina o muere">
+                        <div class="poster-info">
+                            <div class="title">Camina o muere</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/comoentrenar.jpeg" alt="Como entrenar a tu Dragón">
+                        <div class="poster-info">
+                            <div class="title">Como entrenar a tu Dragón</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-row">
+                <h2 class="row-title">
+                    <span>Películas</span>
+                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+                </h2>
+                <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/anillos.png" alt="El señor de los anillos">
+                        <div class="poster-info">
+                            <div class="title">El señor de los anillos</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/interstellar.jpg" alt="Interstellar">
+                        <div class="poster-info">
+                            <div class="title">Interstellar</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/elviajedechihiro.jpg" alt="El viaje de Chihiro">
+                        <div class="poster-info">
+                            <div class="title">El viaje de Chihiro</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/lluviadehamburguesas.jpg" alt="Lluvia de hamburguesas">
+                        <div class="poster-info">
+                            <div class="title">Lluvia de hamburguesas</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="content-row">
+                <h2 class="row-title">
+                    <span>Series</span>
+                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+                </h2>
+                 <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - PROYECTOMOVIE
+        </div>
+    </footer>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const slides = document.querySelectorAll('.hero-slide');
+            const nextButton = document.querySelector('.slider-nav.next');
+            const prevButton = document.querySelector('.slider-nav.prev');
+            let currentSlide = 0;
+            let slideTimer;
+
+            function showSlide(index) {
+                // 1. Limpiar temporizador de imagen anterior
+                clearTimeout(slideTimer);
+
+                // 2. Limpiar video y botón de mute anterior
+                const oldActiveSlide = document.querySelector('.hero-slide.active');
+                if (oldActiveSlide) {
+                    const oldVideo = oldActiveSlide.querySelector('video');
+                    const oldMuteButton = oldActiveSlide.querySelector('.mute-toggle');
+                    if (oldVideo) {
+                        oldVideo.pause();
+                        oldVideo.onended = null;
+                        if (oldMuteButton) oldMuteButton.onclick = null; // Limpia el listener
+                    }
+                }
+
+                // 3. Ocultar todos los slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                // 4. Calcular el nuevo índice
+                if (index >= slides.length) currentSlide = 0;
+                else if (index < 0) currentSlide = slides.length - 1;
+                else currentSlide = index;
+                
+                // 5. Mostrar el slide actual
+                const newActiveSlide = slides[currentSlide];
+                newActiveSlide.classList.add('active');
+
+                // 6. Revisar el contenido del NUEVO slide
+                const newVideo = newActiveSlide.querySelector('video');
+                const muteButton = newActiveSlide.querySelector('.mute-toggle'); // Busca el botón
+                const muteIcon = muteButton.querySelector('i');
+
+                if (newVideo) {
+                    // --- SI ES VIDEO ---
+                    
+                    // A. Mostrar y configurar el botón de mute
+                    muteButton.style.display = 'flex'; // Muestra el botón
+                    
+                    // Asegurarse que el video SIEMPRE empiece muteado
+                    newVideo.muted = true;
+                    muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+
+                    // B. Asignar la acción de clic al botón
+                    muteButton.onclick = () => {
+                        if (newVideo.muted) {
+                            newVideo.muted = false;
+                            muteIcon.className = 'fa-solid fa-volume-high'; // Icono de sonido
+                        } else {
+                            newVideo.muted = true;
+                            muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+                        }
+                    };
+
+                    // C. Configurar el video
+                    newVideo.currentTime = 0; 
+                    newVideo.play(); 
+                    
+                    // D. Escuchar cuándo termina
+                    newVideo.onended = () => {
+                        showSlide(currentSlide + 1);
+                    };
+
+                } else {
+                    // --- SI ES IMAGEN ---
+                    
+                    // Ocultar el botón de mute
+                    muteButton.style.display = 'none'; 
+                    
+                    // Iniciar el temporizador normal de 7 segundos
+                    slideTimer = setTimeout(() => {
+                        showSlide(currentSlide + 1);
+                    }, 7000);
+                }
+            }
+
+            // 7. Eventos de los botones de navegación
+            nextButton.addEventListener('click', () => {
+                showSlide(currentSlide + 1);
+            });
+            prevButton.addEventListener('click', () => {
+                showSlide(currentSlide - 1);
+            });
+
+            // 8. Iniciar el slider
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
