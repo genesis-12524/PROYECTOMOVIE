@@ -1,0 +1,974 @@
+/* === ESTILOS CSS MEJORADOS - AZUL MARINO Y NEGRO === */
+
+/* ===== ESTILOS GENERALES ===== */
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, 
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem rgba(66, 165, 245, 0.25);
+}
+
+body {
+    margin-bottom: 60px;
+    background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 50%, #1b263b 100%);
+    min-height: 100vh;
+    display: flex;
+    color: #e0e1dd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    background: linear-gradient(180deg, #0a192f 0%, #0d1b2a 100%);
+    color: #e0e1dd;
+    padding: 0;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    overflow-y: auto;
+    border-right: 1px solid #1e2a3a;
+}
+
+.sidebar .nav-link {
+    color: #8b9dc3;
+    padding: 15px 25px;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+    margin: 2px 0;
+    font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(66, 165, 245, 0.2);
+    border-left: 4px solid #42a5f5;
+    padding-left: 30px;
+    color: #e0e1dd;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(66, 165, 245, 0.3);
+    border-left: 4px solid #42a5f5;
+    color: #e0e1dd;
+}
+
+.sidebar .logo {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #1e2a3a;
+    margin-bottom: 10px;
+    background: rgba(66, 165, 245, 0.1);
+}
+
+.sidebar .logo h3 {
+    color: #e0e1dd;
+    font-weight: 700;
+}
+
+.sidebar .logo .text-primary {
+    color: #42a5f5 !important;
+}
+
+.sidebar .user-info {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #1e2a3a;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #8b9dc3;
+    background: rgba(66, 165, 245, 0.1);
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.main-content {
+    margin-left: 250px;
+    padding: 30px;
+    width: calc(100% - 250px);
+    background: #0d1b2a;
+    min-height: 100vh;
+}
+
+/* ===== ENCABEZADO DE PÁGINA ===== */
+.page-header {
+    background: linear-gradient(135deg, rgba(66, 165, 245, 0.1), rgba(10, 25, 47, 0.8));
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #1e2a3a;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.page-title {
+    color: #42a5f5;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.page-subtitle {
+    color: #8b9dc3;
+    margin-bottom: 0;
+}
+
+/* ===== TARJETAS DE ESTADÍSTICAS ===== */
+.stats-card {
+    background: linear-gradient(135deg, #1b263b, #0a192f);
+    border: 1px solid #1e2a3a;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(66, 165, 245, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.stats-card:hover::before {
+    left: 100%;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border-color: #42a5f5;
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 1.5rem;
+}
+
+.movies-icon {
+    background: linear-gradient(135deg, #42a5f5, #0d47a1);
+}
+
+.active-icon {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.new-icon {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.genre-icon {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+}
+
+.stats-info h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #e0e1dd;
+}
+
+.stats-info p {
+    color: #8b9dc3;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+/* ===== SECCIÓN DE PELÍCULAS ===== */
+.movies-section {
+    background: #1b263b;
+    border-radius: 12px;
+    border: 1px solid #1e2a3a;
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(135deg, rgba(66, 165, 245, 0.1), transparent);
+    padding: 20px 25px;
+    border-bottom: 1px solid #1e2a3a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header h3 {
+    color: #42a5f5;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* ===== TABLA DE PELÍCULAS ===== */
+.table-responsive {
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+}
+
+.table-movies {
+    margin-bottom: 0;
+    background: #1b263b;
+    color: #e0e1dd;
+    font-size: 0.875rem;
+}
+
+.table-header-custom {
+    background: linear-gradient(135deg, #0d47a1, #0a192f);
+    color: #e0e1dd;
+}
+
+.table-header-custom th {
+    border-bottom: 2px solid #42a5f5;
+    padding: 15px 12px;
+    font-weight: 600;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.table-movies tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #2a3a52;
+}
+
+.table-movies tbody tr:hover {
+    background-color: rgba(66, 165, 245, 0.1);
+    transform: scale(1.01);
+}
+
+.table-movies tbody td {
+    padding: 15px 12px;
+    vertical-align: middle;
+    border-color: #2a3a52;
+}
+
+/* ===== IMÁGENES DE PELÍCULAS ===== */
+.movie-image-container {
+    display: flex;
+    align-items: center;
+}
+
+.movie-image {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid #2a3a52;
+    transition: all 0.3s ease;
+    background: #1e2a3a;
+}
+
+.movie-image:hover {
+    border-color: #42a5f5;
+    transform: scale(1.1);
+}
+
+/* ===== INFORMACIÓN DE PELÍCULAS ===== */
+.movie-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-title {
+    color: #e0e1dd;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.movie-genre {
+    color: #8b9dc3;
+    font-size: 0.8rem;
+}
+
+.movie-id {
+    color: #42a5f5;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+.movie-description {
+    color: #8b9dc3;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.movie-date {
+    color: #8b9dc3;
+    font-size: 0.85rem;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.badge-activo {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+}
+
+.badge-inactivo {
+    background: linear-gradient(135deg, #f44336, #c62828);
+    color: white;
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.btn-view {
+    background: rgba(66, 165, 245, 0.2);
+    color: #42a5f5;
+}
+
+.btn-view:hover {
+    background: #42a5f5;
+    color: white;
+}
+
+.btn-edit {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+}
+
+.btn-edit:hover {
+    background: #ff9800;
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+}
+
+.btn-delete:hover {
+    background: #f44336;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ===== ESTADO SIN PELÍCULAS ===== */
+.no-movies {
+    padding: 60px 20px;
+    color: #8b9dc3;
+}
+
+.no-movies .display-4 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+/* ===== PIE DE TABLA ===== */
+.table-footer {
+    background: rgba(10, 25, 47, 0.8);
+    padding: 15px 25px;
+    border-top: 1px solid #1e2a3a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-info {
+    color: #8b9dc3;
+    font-size: 0.85rem;
+}
+
+.pagination .page-link {
+    background: #1b263b;
+    border: 1px solid #2a3a52;
+    color: #8b9dc3;
+    padding: 8px 15px;
+}
+
+.pagination .page-link:hover {
+    background: #42a5f5;
+    border-color: #42a5f5;
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background: #42a5f5;
+    border-color: #42a5f5;
+    color: white;
+}
+
+/* ===== FORMULARIOS ===== */
+.form-control {
+    background-color: #1e2a3a;
+    border: 1px solid #2a3a52;
+    color: #e0e1dd;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background-color: #1e2a3a;
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25);
+    color: #e0e1dd;
+}
+
+.form-label {
+    color: #e0e1dd;
+    font-weight: 500;
+}
+
+.form-text {
+    color: #8b9dc3;
+}
+
+/* File Input Styling */
+.file-input-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.file-input-label {
+    display: block;
+    padding: 12px 15px;
+    background-color: #1e2a3a;
+    border: 2px dashed #2a3a52;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #8b9dc3;
+}
+
+.file-input-label:hover {
+    background-color: #2a3a52;
+    border-color: #42a5f5;
+    transform: translateY(-2px);
+    color: #e0e1dd;
+}
+
+.file-input-label.has-file {
+    background-color: rgba(76, 175, 80, 0.2);
+    border-color: #4caf50;
+    color: #a5d6a7;
+}
+
+.file-input {
+    display: none;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #2a3a52;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #e0e1dd;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #42a5f5;
+    display: inline-block;
+}
+
+/* ===== ALERTAS ===== */
+.alert {
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f44336, #c62828);
+    color: white;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+}
+
+/* ===== BOTONES PERSONALIZADOS ===== */
+.btn-primary {
+    background: linear-gradient(135deg, #42a5f5, #0d47a1);
+    border: none;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0d47a1, #42a5f5);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(66, 165, 245, 0.3);
+}
+
+.btn-outline-secondary {
+    border: 1px solid #2a3a52;
+    color: #8b9dc3;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.btn-outline-secondary:hover {
+    background: #2a3a52;
+    border-color: #42a5f5;
+    color: #e0e1dd;
+}
+
+/* ===== ESTILOS PARA MODALES ===== */
+.modal-content {
+    background: #1b263b;
+    color: #e0e1dd;
+    border: 1px solid #2a3a52;
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #2a3a52;
+    background: linear-gradient(135deg, #0d47a1, #0a192f);
+}
+
+.modal-footer {
+    border-top: 1px solid #2a3a52;
+}
+
+.modal-backdrop {
+    background-color: rgba(10, 25, 47, 0.8);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .table-footer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .stats-card {
+        margin-bottom: 15px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 3px;
+    }
+    
+    .btn-action {
+        width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+    }
+    
+    /* Ocultar columnas menos importantes en móviles */
+    .table-movies thead th:nth-child(4), /* Descripción */
+    .table-movies tbody td:nth-child(4),
+    .table-movies thead th:nth-child(8), /* Película */
+    .table-movies tbody td:nth-child(8),
+    .table-movies thead th:nth-child(9), /* Trailer */
+    .table-movies tbody td:nth-child(9) {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Ocultar más columnas en pantallas muy pequeñas */
+    .table-movies thead th:nth-child(3), /* Género */
+    .table-movies tbody td:nth-child(3),
+    .table-movies thead th:nth-child(6), /* Fecha */
+    .table-movies tbody td:nth-child(6) {
+        display: none;
+    }
+}
+
+/* ===== SCROLLBAR PERSONALIZADO ===== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0d1b2a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #42a5f5;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0d47a1;
+}
+
+/* ===== LOADING STATES ===== */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.text-gradient {
+    background: linear-gradient(135deg, #42a5f5, #0d47a1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #42a5f5, #0d47a1) 1;
+}
+
+.shadow-custom {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* === ESTILOS AGREGADOS PARA CORREGIR FUNCIONALIDAD === */
+
+/* Estilos para la lista de películas */
+.movies-list {
+    background: #1b263b;
+    border-radius: 12px;
+    border: 1px solid #1e2a3a;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+/* Estilos para la tabla específica de películas */
+#tablaPeliculas {
+    width: 100%;
+    background: #1b263b;
+}
+
+#tablaPeliclas th,
+#tablaPeliculas td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+/* Estilos para botones específicos de películas */
+.btn-outline-primary {
+    border: 1px solid #42a5f5;
+    color: #42a5f5;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #42a5f5;
+    border-color: #42a5f5;
+    color: white;
+}
+
+.btn-outline-warning {
+    border: 1px solid #ff9800;
+    color: #ff9800;
+    background: transparent;
+}
+
+.btn-outline-warning:hover {
+    background: #ff9800;
+    border-color: #ff9800;
+    color: white;
+}
+
+.btn-outline-info {
+    border: 1px solid #42a5f5;
+    color: #42a5f5;
+    background: transparent;
+}
+
+.btn-outline-info:hover {
+    background: #42a5f5;
+    border-color: #42a5f5;
+    color: white;
+}
+
+.btn-outline-danger {
+    border: 1px solid #f44336;
+    color: #f44336;
+    background: transparent;
+}
+
+.btn-outline-danger:hover {
+    background: #f44336;
+    border-color: #f44336;
+    color: white;
+}
+
+/* Estilos para imágenes en tabla */
+.img-thumbnail {
+    background: #1e2a3a;
+    border: 2px solid #2a3a52;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.img-thumbnail:hover {
+    border-color: #42a5f5;
+    transform: scale(1.05);
+}
+
+/* Estilos para badges en tabla */
+.badge.bg-info {
+    background: linear-gradient(135deg, #42a5f5, #0d47a1) !important;
+}
+
+/* Estilos para formulario de subida */
+.needs-validation .form-control:valid {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.needs-validation .form-control:invalid {
+    border-color: #f44336;
+}
+
+.was-validated .form-control:valid {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.was-validated .form-control:invalid {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+/* Estilos para alertas personalizadas */
+.alert-custom {
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+}
+
+/* Estilos para botón de submit */
+.btn-submit {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Estilos para tooltips */
+.tooltip {
+    font-size: 0.8rem;
+}
+
+.tooltip .tooltip-inner {
+    background: #1b263b;
+    border: 1px solid #42a5f5;
+    color: #e0e1dd;
+}
+
+.tooltip .tooltip-arrow {
+    border-top-color: #42a5f5 !important;
+}
+
+/* Estilos para modales de detalles */
+#detailModal .modal-body img {
+    border-radius: 8px;
+    border: 2px solid #2a3a52;
+}
+
+#detailModal .btn {
+    margin: 2px;
+}
+
+/* Estilos para mensajes de carga */
+#peliculasList tr td[colspan="10"] {
+    background: #1b263b;
+    color: #8b9dc3;
+    font-style: italic;
+}
+
+/* Estilos para botones de grupo en acciones */
+.btn-group .btn {
+    margin: 0 1px;
+    border-radius: 4px;
+}
+
+/* Estilos para inputs de fecha y tiempo */
+input[type="date"],
+input[type="text"][pattern] {
+    font-family: 'Courier New', monospace;
+}
+
+/* Estilos para validación de formularios */
+.invalid-feedback {
+    color: #f44336;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.valid-feedback {
+    color: #4caf50;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+/* Estilos para hover states mejorados */
+.table-hover tbody tr:hover {
+    background-color: rgba(66, 165, 245, 0.15) !important;
+}
+
+/* Estilos para responsive de tabla */
+@media (max-width: 1200px) {
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    #tablaPeliculas th,
+    #tablaPeliculas td {
+        padding: 8px 6px;
+    }
+}
+
+/* Estilos para estados vacíos */
+#peliculasList tr td.text-center {
+    background: rgba(10, 25, 47, 0.5);
+    color: #8b9dc3;
+    font-style: italic;
+}
+
+/* Estilos para transiciones suaves */
+.table-movies tbody tr,
+.btn,
+.form-control,
+.file-input-label {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estilos para focus states mejorados */
+.btn:focus,
+.form-control:focus,
+.file-input:focus + .file-input-label {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.3);
+}
+
+/* Estilos para botones deshabilitados */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Estilos para spinner de carga */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
