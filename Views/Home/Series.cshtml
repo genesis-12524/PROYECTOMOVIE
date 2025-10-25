@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Home/index">Inicio</a>
+            <a href="#">Películas</a>
+            <a href="/Home/series" class="nav-active">Series</a>
+            <a href="#">Popular</a>
+        </nav>
+        
+        <div class="nav-actions">
+            <button class="btn-login">Crea tu historia</button>
+            <button class="btn-login">Suscribirse</button>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+    <section class="search-block-section">
+            <div class="container">
+                <h2>¿No sabes qué ver?</h2>
+                <div class="search-block-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" placeholder="Buscar" class="search-block-input">
+                        <i class="fa-solid fa-xmark search-clear-icon"></i>
+                    </div>
+                    <button class="btn-aleatorio">Modo Aleatorio</button>
+                </div>
+            </div>
+        </section>
+
+    <div class="content-area container">
+
+        <section class="content-row">
+            <h2 class="row-title">
+                <span>Series Populares</span>
+                <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+            </h2>
+           <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <section class="content-row">
+            <h2 class="row-title">
+                <span>Dramas</span>
+                <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+            </h2>
+           <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <section class="content-row">
+            <h2 class="row-title">
+                <span>Novelas</span>
+                <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+            </h2>
+           <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <section class="content-row">
+            <h2 class="row-title">
+                <span>Acción </span>
+                <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+            </h2>
+           <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        <section class="content-row">
+            <h2 class="row-title">
+                <span>Romance</span>
+                <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+            </h2>
+           <div class="posters-container">
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
+                        <div class="poster-info">
+                            <div class="title">Merlina</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
+                        <div class="poster-info">
+                            <div class="title">Stranger Things</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
+                        <div class="poster-info">
+                            <div class="title">Squid Game</div>
+                        </div>
+                    </div>
+                    <div class="poster-card">
+                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
+                        <div class="poster-info">
+                            <div class="title">Euphoria</div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+    </div>
+</main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - PROYECTOMOVIE
+        </div>
+    </footer>
+
+    </body>
+</html>
