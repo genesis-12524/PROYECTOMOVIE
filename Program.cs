@@ -16,24 +16,34 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configuración de Identity con tu modelo Usuario - MODIFICADO
-builder.Services.AddIdentity<Usuario, IdentityRole>(options => 
+builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 {
     // Cambiar a false para desarrollo (no requiere confirmación de email)
     options.SignIn.RequireConfirmedAccount = false;
-    
+
     // Configuración adicional recomendada
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 6;
-    
+
     // Opcional: Configuración de usuario
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders(); // ← AGREGAR ESTA LÍNEA
+
+// ✅ AGREGAR CONFIGURACIÓN DE SESSION
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = ".PROYECTOMOVIE.Session";
+});
 
 // Configuración de Cloudinary
 var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");
@@ -74,7 +84,7 @@ app.UseRouting();
 // IMPORTANTE: Agregar UseAuthentication antes de UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapStaticAssets();
 
 app.MapControllerRoute(
