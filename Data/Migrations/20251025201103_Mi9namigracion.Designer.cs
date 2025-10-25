@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PROYECTOMOVIE.Data;
 
@@ -10,9 +11,11 @@ using PROYECTOMOVIE.Data;
 namespace PROYECTOMOVIE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251025201103_Mi9namigracion")]
+    partial class Mi9namigracion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -46,14 +49,14 @@ namespace PROYECTOMOVIE.Data.Migrations
                         new
                         {
                             Id = "2c040acd-d2fb-43ef-5fc5-c2e3f886ff01",
-                            ConcurrencyStamp = "null",
+                            ConcurrencyStamp = "97b51ccb-2b63-410f-9647-142f5bd7de9b",
                             Name = "Cliente",
                             NormalizedName = "CLIENTE"
                         },
                         new
                         {
                             Id = "3a8e1fdb-7c2d-4a5e-8f1c-9d3b2a1edf5c",
-                            ConcurrencyStamp = "null",
+                            ConcurrencyStamp = "7a713f41-2f8d-4234-94a7-2f9de4fd5fe9",
                             Name = "Administrador",
                             NormalizedName = "ADMINISTRADOR"
                         });
