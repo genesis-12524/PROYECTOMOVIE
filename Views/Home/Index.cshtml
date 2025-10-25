@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,11 +21,15 @@
             <a href="#">Series</a>
             <a href="#">Popular</a>
         </nav>
+        
         <div class="nav-actions">
             <button class="btn-login">Crea tu historia</button>
-        </div>
-        <div class="nav-actions">
             <button class="btn-login">Suscribirse</button>
+            
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            
             <div class="avatar"><i class="fa-solid fa-user"></i></div>
         </div>
     </header>
