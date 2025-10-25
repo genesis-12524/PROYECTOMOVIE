@@ -14,7 +14,7 @@ namespace PROYECTOMOVIE.Controllers
     {
         public static string _EndPoint = "https://api.openai.com/";
         public static string _URI = "v1/chat/completions";
-        public static string _APIKey = "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";
+        public static string _APIKey = "12";
         public IActionResult Index()
         {
             return View();
