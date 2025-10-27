@@ -122,13 +122,32 @@
         <section class="search-block-section">
             <div class="container">
                 <h2>¿No sabes qué ver?</h2>
-                <div class="search-block-container">
+                <form asp-controller="Home" asp-action="Buscar" method="get" class="search-block-container">
+            
                     <div class="search-input-wrapper">
-                        <input type="text" placeholder="Buscar" class="search-block-input">
+                        <input type="text" 
+                            name="terminoBusqueda" 
+                            placeholder="Buscar por título..." 
+                            class="search-block-input">
                         <i class="fa-solid fa-xmark search-clear-icon"></i>
                     </div>
-                    <button class="btn-aleatorio">Modo Aleatorio</button>
-                </div>
+                    
+                    <div class="search-buttons-container">
+                        
+                        <button type="submit" 
+                                asp-action="Buscar" 
+                                class="btn-buscar">
+                                Buscar
+                        </button>
+                        
+                        <button type="submit" 
+                                asp-action="Aleatorio" 
+                                class="btn-aleatorio" 
+                                formmethod="get"> Modo Aleatorio
+                        </button>
+                    </div>
+
+                </form>
             </div>
         </section>
 
