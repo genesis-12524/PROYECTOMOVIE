@@ -363,6 +363,41 @@ main{
 /* ---------------------------------- */
 /* 4. Bloque de Búsqueda (NUEVO)      */
 /* ---------------------------------- */
+/* --- AÑADE ESTO AL FINAL DE TU CSS --- */
+
+/* Contenedor para los dos botones de búsqueda */
+.search-buttons-container {
+    display: flex;
+    flex-direction: column; /* Un botón encima del otro */
+    align-items: center;
+    gap: 18px; /* Espacio entre los botones */
+    width: 100%;
+    max-width: 550px; /* Que coincida con el ancho del input */
+}
+
+/* Nuevo estilo para el botón 'Buscar' (azul) */
+.btn-buscar {
+    width: 100%;
+    background-color: var(--accent); /* Tu color azul primario */
+    color: var(--light);
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-buscar:hover {
+    background-color: #006b96; /* Azul más oscuro */
+}
+
+/* El estilo .btn-aleatorio (oscuro) ya lo tenías, 
+   solo nos aseguramos que ocupe el 100% */
+.btn-aleatorio {
+    width: 100%;
+}
+
 .search-block-section {
     background-color: black; /* Tu color azul */
     padding: 50px 20px;

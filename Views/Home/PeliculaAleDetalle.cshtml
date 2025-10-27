@@ -1,0 +1,37 @@
+@using PROYECTOMOVIE.Models
+@model Pelicula
+@{
+    ViewData["Title"] = Model.Nombre_Peli; // Título de la pestaña del navegador
+}
+
+<main>
+    <section class="detalle-hero-section">
+        <div class="detalle-hero-background">
+            
+            <img src="~/@Model.Imagen_Peli" alt="@Model.Nombre_Peli">
+        </div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content container">
+            <h1 class="hero-title">@Model.Nombre_Peli</h1>
+            
+            <p class="hero-description">
+                @Model.Descripción
+            </p>
+
+            <div class="hero-actions">
+                <button class="btn-watch">
+                    <i class="fa-solid fa-play"></i>
+                    Ver Ahora
+                </button>
+                <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
+            </div>
+        </div>
+    </section>
+    
+    <div class="content-area container">
+        <h3>Detalles Adicionales</h3>
+        <p><strong>Fecha publicada:</strong> @Model.Fecha_Publicada</p>
+        <p><strong>Género:</strong> @Model.Genero</p>
+    </div>
+</main>

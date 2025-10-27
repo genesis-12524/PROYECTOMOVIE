@@ -1,0 +1,46 @@
+@model IEnumerable<PROYECTOMOVIE.Models.Pelicula> 
+@{
+    // 2. Cambiamos el título de la pestaña
+    ViewData["Title"] = "Resultados de la Búsqueda";
+    // Recuperamos el término de búsqueda que enviamos desde el Controlador
+    var termino = ViewData["TerminoBusqueda"] as string;
+}
+
+<main>
+    <div class="content-area container">
+
+        <section class="content-row">
+            
+            @if (string.IsNullOrEmpty(termino))
+            {
+                <h2 class="row-title"><span>Mostrando todo</span></h2>
+            }
+            else
+            {
+                <h2 class="row-title"><span>Resultados para "@termino"</span></h2>
+            }
+
+            @if (Model.Any())
+            {
+                <div class="posters-container">
+                    @foreach (var peli in Model)
+                    {
+                        <div class="poster-card">
+                            <img src="~/IMG/img pelis/@peli.Imagen_Peli" alt="@peli.Nombre_Peli">
+                            <div class="poster-info">
+                                <div class="title">@peli.Nombre_Peli</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p style="color: var(--muted); font-size: 18px;">
+                    No se encontraron resultados para "@termino".
+                </p>
+            }
+        </section>
+
+    </div>
+</main>
