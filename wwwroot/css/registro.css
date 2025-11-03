@@ -1,0 +1,235 @@
+/* Estilos para la página de registro - Tema azul marino */
+body {
+    margin-bottom: 60px;
+    background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 50%, #1b263b 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e0e1dd;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+.row {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.col-md-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0;
+}
+
+/* Estilos del formulario */
+#registerForm {
+    background: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2.5rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(66, 135, 245, 0.2);
+}
+
+h1 {
+    color: #4287f5;
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    text-shadow: 0 2px 10px rgba(66, 135, 245, 0.3);
+}
+
+h2 {
+    color: #e0e1dd;
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    font-weight: 400;
+}
+
+hr {
+    background: linear-gradient(90deg, transparent, #4287f5, transparent);
+    height: 2px;
+    border: none;
+    margin: 1.5rem 0;
+    opacity: 0.6;
+}
+
+/* Campos del formulario */
+.form-floating {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.form-floating.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.form-control {
+    background: rgba(23, 42, 58, 0.9);
+    border: 1px solid #2a4a6e;
+    color: #e0e1dd;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+}
+
+.form-control:focus {
+    background: rgba(30, 55, 77, 0.95);
+    border-color: #4287f5;
+    color: #e0e1dd;
+    box-shadow: 0 0 0 0.25rem rgba(66, 135, 245, 0.25);
+    transform: translateY(-2px);
+}
+
+.form-control::placeholder {
+    color: #8da2c5;
+}
+
+/* Etiquetas */
+.form-floating > label {
+    color: #8da2c5;
+    padding: 1rem 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: #4287f5;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* Botón */
+.btn-primary {
+    background: linear-gradient(135deg, #4287f5 0%, #2a6fdb 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2a6fdb 0%, #1a5bc2 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(66, 135, 245, 0.4);
+    color: #ffffff;
+}
+
+.btn-lg {
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+/* Mensajes de validación */
+.text-danger {
+    color: #ff6b6b !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Resumen de validación */
+[asp-validation-summary="ModelOnly"] {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    #registerForm {
+        padding: 2rem 1.5rem;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+    }
+    
+    .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    #registerForm {
+        padding: 1.5rem 1rem;
+    }
+    
+    .form-control {
+        height: calc(3rem + 2px);
+        padding: 0.8rem 0.75rem;
+    }
+    
+    .btn-primary {
+        padding: 0.8rem;
+    }
+    
+    .btn-lg {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+}
+
+/* Estados de validación */
+.form-control.input-validation-error {
+    border-color: #ff6b6b;
+}
+
+.form-control.input-validation-error:focus {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.25);
+}
+
+/* Mejora para la accesibilidad */
+.form-control:focus {
+    outline: none;
+}
+
+/* Efecto de carga del botón */
+#registerSubmit:disabled {
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* Animación suave para el formulario */
+#registerForm {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

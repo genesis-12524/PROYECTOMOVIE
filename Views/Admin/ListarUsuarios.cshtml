@@ -43,9 +43,13 @@
             <a class="nav-link" href="/Admin/Perfil">
                 <i class="bi bi-person me-2"></i> Perfil
             </a>
-            <a class="nav-link text-danger" href="#">
+            
+            <!-- CAMBIO 1: Reemplazar el formulario por botón que abre el modal -->
+            <button type="button" class="nav-link text-danger w-100 text-start bg-transparent border-0 p-0" 
+                    data-bs-toggle="modal" data-bs-target="#logoutModal">
                 <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-            </a>
+            </button>
+        </nav>
         </nav>
         
         <div class="user-info">
@@ -53,6 +57,40 @@
             <p class="mb-0">Último acceso: Hoy</p>
         </div>
     </div>
+
+    <!-- CAMBIO 2: Modal de Confirmación actualizado -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">
+                        <i class="bi bi-question-circle text-primary me-2"></i>
+                        Confirmar Cierre de Sesión
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas cerrar sesión?</p>
+                    <p class="text-muted small">Serás redirigido a la página principal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>No, Cancelar
+                    </button>
+                    <!-- CAMBIO 3: Botón que ejecuta el logout mediante JavaScript -->
+                    <button type="button" class="btn btn-danger" onclick="confirmLogout()">
+                        <i class="bi bi-box-arrow-right me-2"></i>Sí, Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAMBIO 4: Formulario oculto para logout -->
+    <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" 
+          asp-route-returnUrl="~/" method="post" style="display: none;">
+    </form>
+
 
     <!-- Main Content -->
     <div class="main-content">
@@ -288,6 +326,21 @@
                 document.getElementById(`deleteForm-${id}`).submit();
             }
         }
+
+        // CAMBIO 5: JavaScript para el logout -->
+        function confirmLogout() {
+            // Cierra el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
+            modal.hide();
+            
+            // Envía el formulario de logout después de un pequeño delay
+            setTimeout(() => {
+                document.getElementById('logoutForm').submit();
+            }, 300);
+        }
     </script>
+
+
+
 </body>
 </html>
