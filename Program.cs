@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using CloudinaryDotNet;
 using PROYECTOMOVIE.interfaze;
 using PROYECTOMOVIE.Models.config;
+using PROYECTOMOVIE.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,7 @@ builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders(); // ← AGREGAR ESTA LÍNEA
+.AddDefaultTokenProviders();
 
 // ✅ AGREGAR CONFIGURACIÓN DE SESSION
 builder.Services.AddDistributedMemoryCache();
@@ -47,9 +48,9 @@ builder.Services.AddSession(options =>
 
 // Configuración de Cloudinary
 var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");
-builder.Services.Configure<CloudinarySettings>(cloudinarySettings); // Asegúrate de tener la clase CloudinarySettings definida
+builder.Services.Configure<CloudinarySettings>(cloudinarySettings);
 
-// Agregar Cloudinary como singleton (ya lo tenías)
+// Agregar Cloudinary como singleton
 var account = new Account(
     cloudinarySettings["CloudName"],
     cloudinarySettings["ApiKey"],
@@ -58,11 +59,31 @@ var account = new Account(
 builder.Services.AddSingleton(new Cloudinary(account));
 
 // Agregar nuestro servicio CloudinaryService
-builder.Services.AddScoped<ICloudinaryService, CloudinaryService>(); // Asegúrate de tener estas interfaces y clases definidas
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 
+// Configurar Gemini Service
+var geminiApiKey = builder.Configuration["Gemini:ApiKey"] 
+    ?? throw new ArgumentNullException("Gemini:ApiKey no configurado");
 
+builder.Services.AddSingleton<IGeminiService>(provider => 
+    new GeminiService(geminiApiKey));
+
+// CORS para el frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// MVC y API Services
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -70,6 +91,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -78,13 +101,14 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Asegúrate de tener esta línea
+app.UseStaticFiles();
 app.UseRouting();
 
 // IMPORTANTE: Agregar UseAuthentication antes de UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+app.UseCors("AllowAll");
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -94,5 +118,9 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
+
+// Configuración adicional para APIs
+app.UseDefaultFiles();
+app.MapControllers();
 
 app.Run();

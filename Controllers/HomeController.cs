@@ -44,6 +44,11 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult Gemini()
+    {
+        return View();
+    }
+
     // --- 2. AQUÍ ESTÁ LA NUEVA ACCIÓN DE BÚSQUEDA ---
     public async Task<IActionResult> Buscar(string terminoBusqueda)
     {
