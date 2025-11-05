@@ -14,12 +14,44 @@ namespace PROYECTOMOVIE.Data
 
         // DbSets
         public DbSet<Pelicula> Peliculas { get; set; }
+        public DbSet<Serie> Series { get; set; }
         public DbSet<PlanSubcripcion> PlanSubcripciones { get; set; }
         public DbSet<UsuarioSuscripcion> UsuarioSuscripciones { get; set; }
+        public DbSet<UsuarioSerie> UsuarioSeries { get; set; }
         public DbSet<UsuarioPelicula> UsuarioPeliculas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            // Configuración de la llave primaria compuesta para UsuarioSerie
+            builder.Entity<UsuarioSerie>()
+            .HasKey(us => new { us.UsuarioId, us.SerieId });
+            
+            // **IMPORTANTE:** Haz lo mismo para UsuarioPelicula si aún no lo has hecho
+            builder.Entity<UsuarioPelicula>()
+            .HasKey(up => new { up.UsuarioId, up.PeliculaId });
+
+// 2. CONFIGURACIÓN DEL SEEDING para Categorias (Para que los datos se queden)
+            builder.Entity<Categoria>().HasData(
+                new Categoria { Id = 1, Nombre = "Acción" },
+                new Categoria { Id = 2, Nombre = "Comedia" },
+                new Categoria { Id = 3, Nombre = "Drama" },
+                new Categoria { Id = 4, Nombre = "Ciencia Ficción" },
+                new Categoria { Id = 5, Nombre = "Terror" }
+            );
+
+            // 3. Configuración de la relación M:M entre Pelicula y Categoria (sin tabla de unión explícita)
+            // Esto creará la tabla de unión 'PeliculaCategoria' por ti.
+            builder.Entity<Pelicula>()
+                .HasMany(p => p.Categorias) // Asumiendo que agregaste ICollection<Categoria> a Pelicula
+                .WithMany(c => c.Peliculas);
+
+            // 4. Configuración de la relación M:M entre Serie y Categoria
+            // Esto creará la tabla de unión 'SerieCategoria' por ti.
+            builder.Entity<Serie>()
+                .HasMany(s => s.Categorias) // Asumiendo que agregaste ICollection<Categoria> a Serie
+                .WithMany(c => c.Series);
+
             base.OnModelCreating(builder);
 
             // 1. CONFIGURACIÓN DE PELICULA

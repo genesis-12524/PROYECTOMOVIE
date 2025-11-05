@@ -42,6 +42,8 @@ namespace PROYECTOMOVIE.Models
         
         //Relación muchos a muchos
         public virtual ICollection<UsuarioPelicula>? UsuarioPeliculas { get; set; }
+        // Relación muchos a muchos con Categorias
+        public virtual ICollection<Categoria>? Categorias { get; set; }
     }
 
 
