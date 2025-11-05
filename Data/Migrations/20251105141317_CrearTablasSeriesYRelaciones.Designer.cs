@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PROYECTOMOVIE.Data;
 
@@ -10,42 +11,14 @@ using PROYECTOMOVIE.Data;
 namespace PROYECTOMOVIE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105141317_CrearTablasSeriesYRelaciones")]
+    partial class CrearTablasSeriesYRelaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
-
-            modelBuilder.Entity("CategoriaPelicula", b =>
-                {
-                    b.Property<int>("CategoriasId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PeliculasId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CategoriasId", "PeliculasId");
-
-                    b.HasIndex("PeliculasId");
-
-                    b.ToTable("CategoriaPelicula");
-                });
-
-            modelBuilder.Entity("CategoriaSerie", b =>
-                {
-                    b.Property<int>("CategoriasId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SeriesId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CategoriasId", "SeriesId");
-
-                    b.HasIndex("SeriesId");
-
-                    b.ToTable("CategoriaSerie");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -189,49 +162,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("PROYECTOMOVIE.Models.Categoria", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categoria");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nombre = "Acción"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nombre = "Comedia"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nombre = "Drama"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Nombre = "Ciencia Ficción"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Nombre = "Terror"
-                        });
                 });
 
             modelBuilder.Entity("PROYECTOMOVIE.Models.Pelicula", b =>
@@ -587,36 +517,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.HasIndex("Status", "NextBillingDate");
 
                     b.ToTable("UsuarioSuscripciones");
-                });
-
-            modelBuilder.Entity("CategoriaPelicula", b =>
-                {
-                    b.HasOne("PROYECTOMOVIE.Models.Categoria", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PROYECTOMOVIE.Models.Pelicula", null)
-                        .WithMany()
-                        .HasForeignKey("PeliculasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CategoriaSerie", b =>
-                {
-                    b.HasOne("PROYECTOMOVIE.Models.Categoria", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PROYECTOMOVIE.Models.Serie", null)
-                        .WithMany()
-                        .HasForeignKey("SeriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
