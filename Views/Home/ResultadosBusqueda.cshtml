@@ -5,42 +5,77 @@
     // Recuperamos el término de búsqueda que enviamos desde el Controlador
     var termino = ViewData["TerminoBusqueda"] as string;
 }
+<head>
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
 
-<main>
-    <div class="content-area container">
+<body>
 
-        <section class="content-row">
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Home/index" class="nav-active">Inicio</a>
+            <a href="/Home/Pelis">Películas</a>
+            <a href="/Home/series">Series</a>
+            <a href="#">Popular</a>
+        </nav>
+        
+        <div class="nav-actions">
+            <button class="btn-login">Crea tu historia</button>
             
-            @if (string.IsNullOrEmpty(termino))
-            {
-                <h2 class="row-title"><span>Mostrando todo</span></h2>
-            }
-            else
-            {
-                <h2 class="row-title"><span>Resultados para "@termino"</span></h2>
-            }
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
 
-            @if (Model.Any())
-            {
-                <div class="posters-container">
-                    @foreach (var peli in Model)
-                    {
-                        <div class="poster-card">
-                            <img src="~/IMG/img pelis/@peli.Imagen_Peli" alt="@peli.Nombre_Peli">
-                            <div class="poster-info">
-                                <div class="title">@peli.Nombre_Peli</div>
+    <main>
+        <div class="content-area container">
+
+            <section class="content-row">
+                
+                @if (string.IsNullOrEmpty(termino))
+                {
+                    <h2 class="row-title"><span>Mostrando todo</span></h2>
+                }
+                else
+                {
+                    <h2 class="row-title"><span>Resultados para "@termino"</span></h2>
+                }
+
+                @if (Model.Any())
+                {
+                    <div class="posters-container">
+                        @foreach (var peli in Model)
+                        {
+
+                            <a asp-controller="Home" 
+                               asp-action="PeliculaDetalle" 
+                               asp-route-id="@peli.Id" 
+                               class="poster-link-wrapper">
+
+                            <div class="poster-card">
+                                <img src="~/IMG/img-pelis/@peli.ImagenPublicId" alt="@peli.Nombre_Peli">
+                                <div class="poster-info">
+                                    <div class="title">@peli.ImagenPublicId</div>
+                                </div>
                             </div>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <p style="color: var(--muted); font-size: 18px;">
-                    No se encontraron resultados para "@termino".
-                </p>
-            }
-        </section>
 
-    </div>
-</main>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p style="color: var(--muted); font-size: 18px;">
+                        No se encontraron resultados para "@termino".
+                    </p>
+                }
+            </section>
+
+        </div>
+    </main>
+</body>
