@@ -47,7 +47,7 @@
                             loop 
                             playsinline>
                             
-                            <source src="~/Video/avatar 3 trailer.mp4 " type="video/mp4">
+                            <source src="~/Video/avatar-3-trailer.mp4 " type="video/mp4">
                             Tu navegador no soporta el tag de video.
                         </video>
                     </div>
@@ -187,69 +187,67 @@
                 </div>
             </section>
 
-            <section class="content-row">
+           <section class="content-row">
                 <h2 class="row-title">
                     <span>Películas</span>
-                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+                    @* Este enlace lleva a la página que muestra TODAS las películas *@
+                    <a href="/Home/Pelis">Ver más <i class="fa-solid fa-angle-right"></i></a>
                 </h2>
                 <div class="posters-container">
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/anillos.png" alt="El señor de los anillos">
-                        <div class="poster-info">
-                            <div class="title">El señor de los anillos</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/interstellar.jpg" alt="Interstellar">
-                        <div class="poster-info">
-                            <div class="title">Interstellar</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/elviajedechihiro.jpg" alt="El viaje de Chihiro">
-                        <div class="poster-info">
-                            <div class="title">El viaje de Chihiro</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/lluviadehamburguesas.jpg" alt="Lluvia de hamburguesas">
-                        <div class="poster-info">
-                            <div class="title">Lluvia de hamburguesas</div>
-                        </div>
-                    </div>
+                    
+                    @* Bucle para dibujar cada película del ViewModel *@
+                    @foreach (var pelicula in Model.Peliculas)
+                    {
+                        @* Usamos un <a> para que cada tarjeta sea un link a la página de Detalles.
+                           Asumo que tu página de detalles se llama 'Detalles'
+                        *@
+                        <a href="/Home/Detalles/@pelicula.Id" class="poster-card">
+                            <img src="~/IMG/img-pelis/@pelicula.ImagenPublicId" alt="@pelicula.Nombre_Peli">
+                            <div class="poster-info">
+                                <div class="title">@pelicula.Nombre_Peli</div>
+                            </div>
+                        </a>
+                    }
+                    
+                    @* Si no hay películas, puedes mostrar un mensaje *@
+                    @* LÍNEA CORREGIDA *@
+                    @if (Model.Peliculas.Count == 0)
+                    {
+                        <p>No hay películas para mostrar en este momento.</p>
+                    }
+                    
                 </div>
             </section>
-            
+
             <section class="content-row">
                 <h2 class="row-title">
                     <span>Series</span>
-                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
+                    @* Este enlace lleva a la página que muestra TODAS las series *@
+                    <a href="/Home/Series">Ver más <i class="fa-solid fa-angle-right"></i></a>
                 </h2>
                  <div class="posters-container">
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/merlina.png" alt="Merlina">
-                        <div class="poster-info">
-                            <div class="title">Merlina</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/strangerthings.jpg" alt="Stranger Things">
-                        <div class="poster-info">
-                            <div class="title">Stranger Things</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/squidgame.jpg" alt="Squid Game">
-                        <div class="poster-info">
-                            <div class="title">Squid Game</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/euphoria.jpg" alt="Euphoria">
-                        <div class="poster-info">
-                            <div class="title">Euphoria</div>
-                        </div>
-                    </div>
+
+                    @* Bucle para dibujar cada serie del ViewModel *@
+                    @foreach (var serie in Model.Series)
+                    {
+                        @* Asumo que tienes una página de detalles para series, 
+                           quizás '/Home/DetallesSerie/@serie.Id' 
+                        *@
+                        <a href="/Home/DetallesSerie/@serie.Id" class="poster-card">
+                            <img src="~/IMG/img-pelis/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                            <div class="poster-info">
+                                <div class="title">@serie.Nombre_Serie</div>
+                            </div>
+                        </a>
+                    }
+
+                    @* Si no hay series, puedes mostrar un mensaje *@
+                    @* LÍNEA CORREGIDA *@
+                    @if (Model.Peliculas.Count == 0)
+                    {
+                        <p>No hay series para mostrar en este momento.</p>
+                    }
+
                 </div>
             </section>
         </div>

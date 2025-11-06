@@ -15,7 +15,7 @@ html {
 }
 
 body {
-     background-color: #f8f9fa;
+     background-color: #000000;
     min-height: 100vh;
 }
         
@@ -26,7 +26,7 @@ body {
     height: 100vh;
     width: 250px;
     background: linear-gradient(180deg, #2c3e50, #1a2530);
-    color: white;
+    color: rgb(0, 0, 0);
     padding: 0;
      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
@@ -34,7 +34,7 @@ body {
 }
         
 .sidebar .nav-link {
-     color: #ecf0f1;
+     color: #000000;
     padding: 15px 25px;
     border-left: 4px solid transparent;
     transition: all 0.3s ease;
@@ -65,7 +65,7 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin-top: 20px;
     font-size: 0.9rem;
-    color: #bdc3c7;
+    color: #000000;
 }
         
 .main-content {

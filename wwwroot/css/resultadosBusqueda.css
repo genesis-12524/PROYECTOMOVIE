@@ -1,0 +1,122 @@
+/* ======================================= */
+/* 1. ESTRUCTURA GENERAL Y CONTENEDOR */
+/* ======================================= */
+
+/* Asegura que el área principal tenga un espaciado adecuado */
+.content-area.container {
+    padding-top: 50px; /* Espacio arriba para evitar superposición con headers */
+    padding-bottom: 50px;
+    max-width: 1200px; /* Limita el ancho en pantallas grandes */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilo para el título de la sección (ej: "Resultados para 'Termino'") */
+.row-title {
+    color: var(--text-color, #fff); /* Asumo color de texto blanco o una variable */
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 100px;
+    border-bottom: 2px solid var(--accent-color, #e50914); /* Línea decorativa roja */
+    padding-bottom: 15px;
+    display: inline-block; /* Ajusta el borde inferior al contenido */
+}
+
+/* ======================================= */
+/* 2. CONTENEDOR DE POSTERS (GRID) */
+/* ======================================= */
+
+/* Define el contenedor como un Grid para organizar las tarjetas */
+.posters-container {
+    display: grid;
+    /* Usa auto-fit para crear columnas flexibles que se ajustan al tamaño de la pantalla */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+    gap: 20px; /* Espacio entre las tarjetas */
+    margin-top: 40px;
+}
+
+/* ======================================= */
+/* 3. TARJETA INDIVIDUAL (POSTER-CARD) */
+/* ======================================= */
+
+.poster-card {
+    position: relative;
+    overflow: hidden; /* Oculta partes de la imagen que sobresalgan */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Sombra suave */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* Efecto hover: Escala la tarjeta y levanta la sombra */
+.poster-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+
+/* Estilos de la imagen del póster */
+.poster-card img {
+    width: 100%;
+    height: 100%; /* Ajuste para mantener proporción si es necesario */
+    display: block;
+    object-fit: cover; /* Asegura que la imagen cubra el área sin deformarse */
+}
+
+/* ======================================= */
+/* 4. INFORMACIÓN DEL POSTER (OVERLAY) */
+/* ======================================= */
+
+.poster-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* Gradiente oscuro en la parte inferior para que el texto sea legible */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+    padding: 10px;
+    color: #fff;
+    opacity: 0; /* Inicialmente oculto */
+    transition: opacity 0.3s ease;
+}
+
+/* Muestra la información al hacer hover */
+.poster-card:hover .poster-info {
+    opacity: 1;
+}
+
+.poster-info .title {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap; /* Evita que el título se rompa */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Puntos suspensivos si el título es muy largo */
+}
+
+/* ======================================= */
+/* 5. DISEÑO RESPONSIVE (Móviles y Tablets) */
+/* ======================================= */
+
+/* Ajuste para pantallas más pequeñas (ej: móviles) */
+@media (max-width: 768px) {
+    .content-area.container {
+        padding: 30px 15px; /* Más padding en los lados */
+    }
+
+    .posters-container {
+        /* Muestra al menos 2 columnas en móviles */
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .row-title {
+        font-size: 24px;
+    }
+
+    /* Agrega esto a tu archivo CSS */
+.posters-container .poster-link-wrapper {
+    display: block; /* Hace que el enlace ocupe toda la celda del grid */
+    text-decoration: none; /* Quita el subrayado típico de los enlaces */
+    color: inherit; /* Hereda el color de texto */
+    }
+
+/* El efecto hover lo mantienes en .poster-card, pero ahora todo es clicable */
+}

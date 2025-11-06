@@ -19,7 +19,22 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        return View();
+
+        // 1. Crea una instancia del ViewModel
+        var viewModel = new VerPorLista();
+
+        // 2. Llena las listas desde la base de datos
+        //    (Usamos .Take(10) para no cargar 1000 películas en la página principal)
+        viewModel.Peliculas = _context.Peliculas
+                                .OrderByDescending(p => p.Fecha_Publicada) // Ejemplo: más nuevas primero
+                                .Take(10) // Muestra solo las primeras 10
+                                .ToList();
+        
+        viewModel.Series = _context.Series // Asumo que tu tabla se llama 'Series'
+                                .OrderByDescending(s => s.Fecha_Publicada)
+                                .Take(10)
+                                .ToList();
+        return View(viewModel);
     }
 
     public IActionResult Privacy()
