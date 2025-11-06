@@ -262,102 +262,144 @@
     </footer>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const slides = document.querySelectorAll('.hero-slide');
-            const nextButton = document.querySelector('.slider-nav.next');
-            const prevButton = document.querySelector('.slider-nav.prev');
-            let currentSlide = 0;
-            let slideTimer;
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- CÓDIGO DEL SLIDER DE HÉROE ---
+        const slides = document.querySelectorAll('.hero-slide');
+        const nextButton = document.querySelector('.slider-nav.next');
+        const prevButton = document.querySelector('.slider-nav.prev');
+        let currentSlide = 0;
+        let slideTimer;
 
-            function showSlide(index) {
-                // 1. Limpiar temporizador de imagen anterior
-                clearTimeout(slideTimer);
+        function showSlide(index) {
+            // 1. Limpiar temporizador de imagen anterior
+            clearTimeout(slideTimer);
 
-                // 2. Limpiar video y botón de mute anterior
-                const oldActiveSlide = document.querySelector('.hero-slide.active');
-                if (oldActiveSlide) {
-                    const oldVideo = oldActiveSlide.querySelector('video');
-                    const oldMuteButton = oldActiveSlide.querySelector('.mute-toggle');
-                    if (oldVideo) {
-                        oldVideo.pause();
-                        oldVideo.onended = null;
-                        if (oldMuteButton) oldMuteButton.onclick = null; // Limpia el listener
-                    }
+            // 2. Limpiar video y botón de mute anterior
+            const oldActiveSlide = document.querySelector('.hero-slide.active');
+            if (oldActiveSlide) {
+                const oldVideo = oldActiveSlide.querySelector('video');
+                const oldMuteButton = oldActiveSlide.querySelector('.mute-toggle');
+                if (oldVideo) {
+                    oldVideo.pause();
+                    oldVideo.onended = null;
+                    if (oldMuteButton) oldMuteButton.onclick = null; // Limpia el listener
                 }
+            }
 
-                // 3. Ocultar todos los slides
-                slides.forEach(slide => {
-                    slide.classList.remove('active');
-                });
+            // 3. Ocultar todos los slides
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // 4. Calcular el nuevo índice
+            if (index >= slides.length) currentSlide = 0;
+            else if (index < 0) currentSlide = slides.length - 1;
+            else currentSlide = index;
+            
+            // 5. Mostrar el slide actual
+            const newActiveSlide = slides[currentSlide];
+            newActiveSlide.classList.add('active');
+
+            // 6. Revisar el contenido del NUEVO slide
+            const newVideo = newActiveSlide.querySelector('video');
+            const muteButton = newActiveSlide.querySelector('.mute-toggle'); // Busca el botón
+            const muteIcon = muteButton ? muteButton.querySelector('i') : null; // Verificación
+
+            if (newVideo) {
+                // --- SI ES VIDEO ---
                 
-                // 4. Calcular el nuevo índice
-                if (index >= slides.length) currentSlide = 0;
-                else if (index < 0) currentSlide = slides.length - 1;
-                else currentSlide = index;
-                
-                // 5. Mostrar el slide actual
-                const newActiveSlide = slides[currentSlide];
-                newActiveSlide.classList.add('active');
-
-                // 6. Revisar el contenido del NUEVO slide
-                const newVideo = newActiveSlide.querySelector('video');
-                const muteButton = newActiveSlide.querySelector('.mute-toggle'); // Busca el botón
-                const muteIcon = muteButton.querySelector('i');
-
-                if (newVideo) {
-                    // --- SI ES VIDEO ---
-                    
+                if (muteButton) { // Solo si existe el botón
                     // A. Mostrar y configurar el botón de mute
                     muteButton.style.display = 'flex'; // Muestra el botón
                     
                     // Asegurarse que el video SIEMPRE empiece muteado
                     newVideo.muted = true;
-                    muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+                    if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
 
                     // B. Asignar la acción de clic al botón
                     muteButton.onclick = () => {
                         if (newVideo.muted) {
                             newVideo.muted = false;
-                            muteIcon.className = 'fa-solid fa-volume-high'; // Icono de sonido
+                            if (muteIcon) muteIcon.className = 'fa-solid fa-volume-high'; // Icono de sonido
                         } else {
                             newVideo.muted = true;
-                            muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+                            if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
                         }
                     };
+                }
 
-                    // C. Configurar el video
-                    newVideo.currentTime = 0; 
-                    newVideo.play(); 
-                    
-                    // D. Escuchar cuándo termina
-                    newVideo.onended = () => {
-                        showSlide(currentSlide + 1);
-                    };
+                // C. Configurar el video
+                newVideo.currentTime = 0; 
+                newVideo.play(); 
+                
+                // D. Escuchar cuándo termina
+                newVideo.onended = () => {
+                    showSlide(currentSlide + 1);
+                };
 
+            } else {
+                // --- SI ES IMAGEN ---
+                
+                // Ocultar el botón de mute (si existe)
+                if (muteButton) muteButton.style.display = 'none'; 
+                
+                // Iniciar el temporizador normal de 7 segundos
+                slideTimer = setTimeout(() => {
+                    showSlide(currentSlide + 1);
+                }, 7000);
+            }
+        }
+
+        // 7. Eventos de los botones de navegación
+        nextButton.addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+        prevButton.addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+
+        // 8. Iniciar el slider
+        showSlide(currentSlide);
+
+
+        // ----------------------------------------------------------------------------------
+        // --- NUEVO CÓDIGO PARA BORRAR LA BARRA DE BÚSQUEDA ---
+        // ----------------------------------------------------------------------------------
+
+        const inputField = document.querySelector('.search-block-input');
+        const clearIcon = document.querySelector('.search-clear-icon');
+
+        if (inputField && clearIcon) {
+            
+            // Función para borrar el campo
+            function clearSearchInput() {
+                inputField.value = ''; // Establece el valor del input a vacío
+                inputField.focus(); // Vuelve a enfocar el input
+                toggleClearIcon(); // Oculta la 'x'
+            }
+
+            // Función para mostrar/ocultar la 'x' dinámicamente
+            function toggleClearIcon() {
+                // Usamos 'block' o 'inline-block' para mostrar, y 'none' para ocultar
+                // Asumo que el ícono está diseñado para aparecer a la derecha del input.
+                if (inputField.value.length > 0) {
+                    clearIcon.style.display = 'block'; 
                 } else {
-                    // --- SI ES IMAGEN ---
-                    
-                    // Ocultar el botón de mute
-                    muteButton.style.display = 'none'; 
-                    
-                    // Iniciar el temporizador normal de 7 segundos
-                    slideTimer = setTimeout(() => {
-                        showSlide(currentSlide + 1);
-                    }, 7000);
+                    clearIcon.style.display = 'none';
                 }
             }
 
-            // 7. Eventos de los botones de navegación
-            nextButton.addEventListener('click', () => {
-                showSlide(currentSlide + 1);
-            });
-            prevButton.addEventListener('click', () => {
-                showSlide(currentSlide - 1);
-            });
+            // 1. Agregar el Listener de evento al ícono para borrar
+            clearIcon.addEventListener('click', clearSearchInput);
 
-            // 8. Iniciar el slider
-            showSlide(currentSlide);
-        });
-    </script>
+            // 2. Escuchar cada vez que se teclea algo en el input (para mostrar/ocultar la 'x')
+            inputField.addEventListener('input', toggleClearIcon);
+            
+            // 3. Inicializar (ocultar la 'x' si no hay texto al cargar la página)
+            toggleClearIcon(); 
+        }
+        
+    });
+</script>
 </body>
 </html>

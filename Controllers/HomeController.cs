@@ -54,9 +54,14 @@ public class HomeController : Controller
         // 4. Si el término no está vacío, filtra la consulta
         if (!string.IsNullOrEmpty(terminoBusqueda))
         {
+
+            // para que la comparación sea insensible a mayúsculas/minúsculas.
+            string terminoEnMinusculas = terminoBusqueda.ToLower();
+
             peliculasQuery = peliculasQuery.Where(
-                p => p.Nombre_Peli != null && p.Nombre_Peli.Contains(terminoBusqueda)
-            );
+                p => p.Nombre_Peli != null && 
+                    p.Nombre_Peli.ToLower().Contains(terminoEnMinusculas)
+        );
         }
 
         // 5. Ejecuta la consulta y envía los resultados a una NUEVA vista
