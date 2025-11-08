@@ -44,6 +44,17 @@
             return View(viewModel);
         }
 
+    public IActionResult Gemini()
+    {
+        return View();
+    }
+
+    // --- 2. AQUÍ ESTÁ LA NUEVA ACCIÓN DE BÚSQUEDA ---
+    public async Task<IActionResult> Buscar(string terminoBusqueda)
+    {
+        // 1. Prepara las consultas base para ambas tablas
+            var peliculasQuery = from peli in _context.Peliculas
+                                    select peli;
 
         // --- 2. ACCIÓN PELIS (PÁGINA DE PELÍCULAS) ---
         // Esta es la acción para la página de "Películas" (http://localhost:5162/Home/Pelis)
