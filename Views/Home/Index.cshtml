@@ -16,6 +16,177 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+    <style>
+        .video-portada-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            overflow: hidden;
+        }
+
+        .video-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.3) 0%,
+                rgba(0,0,0,0.7) 100%
+            );
+            z-index: 2;
+        }
+
+        .video-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 5%;
+        }
+
+        .video-movie-info {
+            max-width: 600px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .video-movie-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            line-height: 1.1;
+            color: white;
+        }
+
+        .video-movie-description {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            opacity: 0.9;
+            color: white;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .video-btn-primary {
+            background: #e50914;
+            color: white;
+        }
+
+        .video-btn-primary:hover {
+            background: #f40612;
+            transform: scale(1.05);
+            color: white;
+            text-decoration: none;
+        }
+
+        .video-btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .video-btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+            color: white;
+            text-decoration: none;
+        }
+
+        .video-loading, .video-error {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .video-mute-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 4;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-mute-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .video-movie-title {
+                font-size: 2.5rem;
+            }
+            
+            .video-movie-description {
+                font-size: 1rem;
+            }
+            
+            .video-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .video-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .video-portada-container {
+                height: 60vh;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -40,89 +211,102 @@
     </header>
 
     <main>
-        <section class="hero-section">
-            
-            <div class="slider-container">
+        <!-- SECCIÓN DE VIDEO PORTADA -->
+        <section class="video-portada-container" id="videoPortadaSection">
+            @if (ViewBag.VideoPortada != null && ViewBag.VideoPortada.TieneVideoConfigurado && !string.IsNullOrEmpty(ViewBag.VideoPortada.TrailerUrl))
+            {
+                <!-- Video de fondo -->
+                <video class="video-background" autoplay muted loop id="backgroundVideo">
+                    <source src="@ViewBag.VideoPortada.TrailerUrl" type="video/mp4">
+                    Tu navegador no soporta el video.
+                </video>
+                <div class="video-overlay"></div>
 
-                <div class="hero-slide active">
-                    <div class="hero-background">
-                        <video 
-                            poster="~/IMG/img pelis/avatar.jpeg" 
-                            autoplay 
-                            muted 
-                            loop 
-                            playsinline>
-                            
-                            <source src="~/Videos/avatar-3-trailer.mp4 " type="video/mp4">
-                            Tu navegador no soporta el tag de video.
-                        </video>
-                    </div>
-                    <div class="hero-overlay"></div>
-                    <div class="hero-content container">
-                        <h1 class="hero-title">AVATAR 3: Fire and Ash</h1>
-                        <p class="hero-description">
-                            Próximamente en 2024: Sumérgete en el mundo de Pandora una vez más con "Avatar 3: Fire and Ash", la esperada continuación de la saga épica de ciencia ficción dirigida por James Cameron.
-                        </p>
-                        <div class="hero-actions">
-                            <button class="btn-watch">
-                                <i class="fa-solid fa-play"></i>
-                                Próximamente
+                <!-- Contenido informativo -->
+                <div class="video-content">
+                    <div class="video-movie-info">
+                        <h1 class="video-movie-title">@ViewBag.VideoPortada.NombrePelicula</h1>
+                        <p class="video-movie-description">@ViewBag.VideoPortada.DescripcionPelicula</p>
+                        <div class="video-actions">
+                            <button class="video-btn video-btn-primary" onclick="toggleVideoPlay()" id="videoPlayBtn">
+                                <span>▶</span> Reproducir
                             </button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
-
-                            <button class="btn-icon-action mute-toggle">
-                                <i class="fa-solid fa-volume-xmark"></i>
-                            </button>
+                            <a href="/Home/PeliculaDetalle/@ViewBag.VideoPortada.PeliculaSeleccionadaId" class="video-btn video-btn-secondary">
+                                <span>ℹ</span> Más Información
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="hero-slide">
-                    <div class="hero-background">
-                        <img src="~/IMG/img pelis/together.png" alt="Together">
-                    </div>
-                    <div class="hero-overlay"></div>
-                    <div class="hero-content container">
-                        <h1 class="hero-title">Together</h1>
-                        <p class="hero-description">
-                            Tras mudarse al campo en busca de una nueva vida, una pareja comienza a experimentar fenómenos sobrenaturales que no solo alteran su vínculo, sino también su percepción de la relación... y de sí mismos.
-                        </p>
-                        <div class="hero-actions">
-                            <button class="btn-watch">
-                                <i class="fa-solid fa-play"></i>
-                                Ver en Amazon Prime
-                            </button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
+                <!-- Botón de mute -->
+                <button class="video-mute-btn" onclick="toggleVideoMute()" id="videoMuteBtn">
+                    <i class="fa-solid fa-volume-xmark"></i>
+                </button>
+
+                <script>
+                    const video = document.getElementById('backgroundVideo');
+                    const videoPlayBtn = document.getElementById('videoPlayBtn');
+                    const videoMuteBtn = document.getElementById('videoMuteBtn');
+
+                    function toggleVideoPlay() {
+                        if (video.paused) {
+                            video.play();
+                            videoPlayBtn.innerHTML = '<span>⏸</span> Pausar';
+                        } else {
+                            video.pause();
+                            videoPlayBtn.innerHTML = '<span>▶</span> Reproducir';
+                        }
+                    }
+
+                    function toggleVideoMute() {
+                        if (video.muted) {
+                            video.muted = false;
+                            videoMuteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+                        } else {
+                            video.muted = true;
+                            videoMuteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+                        }
+                    }
+
+                    // Controlar el estado del botón basado en el video
+                    video.addEventListener('play', function() {
+                        videoPlayBtn.innerHTML = '<span>⏸</span> Pausar';
+                    });
+
+                    video.addEventListener('pause', function() {
+                        videoPlayBtn.innerHTML = '<span>▶</span> Reproducir';
+                    });
+
+                    // Reiniciar video cuando termine (para el loop)
+                    video.addEventListener('ended', function() {
+                        video.currentTime = 0;
+                        video.play();
+                    });
+
+                    // Reproducir automáticamente cuando la página cargue
+                    document.addEventListener('DOMContentLoaded', function() {
+                        video.play().catch(function(error) {
+                            console.log('Auto-play fue prevenido:', error);
+                        });
+                    });
+                </script>
+            }
+            else
+            {
+                <!-- Slider original como fallback -->
+                <div class="slider-container">
+                    <div class="hero-slide active">
+                        <img src="~/IMG/hero1.jpg" alt="Hero 1">
+                        <div class="slide-content">
+                            <h1>Bienvenido a WatchLenn</h1>
+                            <p>Descubre las mejores películas y series</p>
+                            <a href="/Home/Pelis" class="btn-hero">Explorar Contenido</a>
                         </div>
                     </div>
+                    <button class="slider-nav prev"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="slider-nav next"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
-
-                <div class="hero-slide">
-                    <div class="hero-background">
-                        <img src="~/IMG/img pelis/elio.jpg" alt="Elio">
-                    </div>
-                    <div class="hero-overlay"></div>
-                    <div class="hero-content container">
-                        <h1 class="hero-title">Elio</h1>
-                        <p class="hero-description">
-                            En esta aventura cósmica llena de diversión y acción, Elio, un fanático del espacio con una imaginación muy activa, es teletransportado a una organización interplanetaria con miembros de galaxias lejanas. Identificado erróneamente por el líder de la Tierra, Elio debe forjar lazos con formas de vida extraterrestre, evitar una crisis intergaláctica y descubrir quién es y cuál es su lugar.
-                        </p>
-                        <div class="hero-actions">
-                            <button class="btn-watch">
-                                <i class="fa-solid fa-play"></i>
-                                Ver en Disney+
-                            </button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
-                            <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-            </div> <button class="slider-nav prev"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="slider-nav next"><i class="fa-solid fa-chevron-right"></i></button>
-            
+            }
         </section>
 
         <section class="search-block-section">
@@ -156,7 +340,6 @@
                 </form>
             </div>
         </section>
-
 
         <div class="content-area container">
 
@@ -248,111 +431,120 @@
         </div>
     </footer>
 
-@* El JavaScript se mantiene igual *@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // --- CÓDIGO DEL SLIDER DE HÉROE ---
-        const slides = document.querySelectorAll('.hero-slide');
-        const nextButton = document.querySelector('.slider-nav.next');
-        const prevButton = document.querySelector('.slider-nav.prev');
-        let currentSlide = 0;
-        let slideTimer;
+        // --- CÓDIGO DEL SLIDER DE HÉROE (solo se ejecuta si no hay video portada) ---
+        const videoPortadaSection = document.getElementById('videoPortadaSection');
+        const hasVideoPortada = videoPortadaSection.querySelector('video') !== null;
 
-        function showSlide(index) {
-            // 1. Limpiar temporizador de imagen anterior
-            clearTimeout(slideTimer);
+        if (!hasVideoPortada) {
+            const slides = document.querySelectorAll('.hero-slide');
+            const nextButton = document.querySelector('.slider-nav.next');
+            const prevButton = document.querySelector('.slider-nav.prev');
+            let currentSlide = 0;
+            let slideTimer;
 
-            // 2. Limpiar video y botón de mute anterior
-            const oldActiveSlide = document.querySelector('.hero-slide.active');
-            if (oldActiveSlide) {
-                const oldVideo = oldActiveSlide.querySelector('video');
-                const oldMuteButton = oldActiveSlide.querySelector('.mute-toggle');
-                if (oldVideo) {
-                    oldVideo.pause();
-                    oldVideo.onended = null;
-                    if (oldMuteButton) oldMuteButton.onclick = null; // Limpia el listener
+            function showSlide(index) {
+                // 1. Limpiar temporizador de imagen anterior
+                clearTimeout(slideTimer);
+
+                // 2. Limpiar video y botón de mute anterior
+                const oldActiveSlide = document.querySelector('.hero-slide.active');
+                if (oldActiveSlide) {
+                    const oldVideo = oldActiveSlide.querySelector('video');
+                    const oldMuteButton = oldActiveSlide.querySelector('.mute-toggle');
+                    if (oldVideo) {
+                        oldVideo.pause();
+                        oldVideo.onended = null;
+                        if (oldMuteButton) oldMuteButton.onclick = null; // Limpia el listener
+                    }
                 }
-            }
 
-            // 3. Ocultar todos los slides
-            slides.forEach(slide => {
-                slide.classList.remove('active');
-            });
-            
-            // 4. Calcular el nuevo índice
-            if (index >= slides.length) currentSlide = 0;
-            else if (index < 0) currentSlide = slides.length - 1;
-            else currentSlide = index;
-            
-            // 5. Mostrar el slide actual
-            const newActiveSlide = slides[currentSlide];
-            newActiveSlide.classList.add('active');
-
-            // 6. Revisar el contenido del NUEVO slide
-            const newVideo = newActiveSlide.querySelector('video');
-            const muteButton = newActiveSlide.querySelector('.mute-toggle'); // Busca el botón
-            const muteIcon = muteButton ? muteButton.querySelector('i') : null; // Verificación
-
-            if (newVideo) {
-                // --- SI ES VIDEO ---
+                // 3. Ocultar todos los slides
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
                 
-                if (muteButton) { // Solo si existe el botón
-                    // A. Mostrar y configurar el botón de mute
-                    muteButton.style.display = 'flex'; // Muestra el botón
+                // 4. Calcular el nuevo índice
+                if (index >= slides.length) currentSlide = 0;
+                else if (index < 0) currentSlide = slides.length - 1;
+                else currentSlide = index;
+                
+                // 5. Mostrar el slide actual
+                const newActiveSlide = slides[currentSlide];
+                newActiveSlide.classList.add('active');
+
+                // 6. Revisar el contenido del NUEVO slide
+                const newVideo = newActiveSlide.querySelector('video');
+                const muteButton = newActiveSlide.querySelector('.mute-toggle'); // Busca el botón
+                const muteIcon = muteButton ? muteButton.querySelector('i') : null; // Verificación
+
+                if (newVideo) {
+                    // --- SI ES VIDEO ---
                     
-                    // Asegurarse que el video SIEMPRE empiece muteado
-                    newVideo.muted = true;
-                    if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+                    if (muteButton) { // Solo si existe el botón
+                        // A. Mostrar y configurar el botón de mute
+                        muteButton.style.display = 'flex'; // Muestra el botón
+                        
+                        // Asegurarse que el video SIEMPRE empiece muteado
+                        newVideo.muted = true;
+                        if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
 
-                    // B. Asignar la acción de clic al botón
-                    muteButton.onclick = () => {
-                        if (newVideo.muted) {
-                            newVideo.muted = false;
-                            if (muteIcon) muteIcon.className = 'fa-solid fa-volume-high'; // Icono de sonido
-                        } else {
-                            newVideo.muted = true;
-                            if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
-                        }
+                        // B. Asignar la acción de clic al botón
+                        muteButton.onclick = () => {
+                            if (newVideo.muted) {
+                                newVideo.muted = false;
+                                if (muteIcon) muteIcon.className = 'fa-solid fa-volume-high'; // Icono de sonido
+                            } else {
+                                newVideo.muted = true;
+                                if (muteIcon) muteIcon.className = 'fa-solid fa-volume-xmark'; // Icono de silencio
+                            }
+                        };
+                    }
+
+                    // C. Configurar el video
+                    newVideo.currentTime = 0; 
+                    newVideo.play(); 
+                    
+                    // D. Escuchar cuándo termina
+                    newVideo.onended = () => {
+                        showSlide(currentSlide + 1);
                     };
+
+                } else {
+                    // --- SI ES IMAGEN ---
+                    
+                    // Ocultar el botón de mute (si existe)
+                    if (muteButton) muteButton.style.display = 'none'; 
+                    
+                    // Iniciar el temporizador normal de 7 segundos
+                    slideTimer = setTimeout(() => {
+                        showSlide(currentSlide + 1);
+                    }, 7000);
                 }
+            }
 
-                // C. Configurar el video
-                newVideo.currentTime = 0; 
-                newVideo.play(); 
-                
-                // D. Escuchar cuándo termina
-                newVideo.onended = () => {
-                    showSlide(currentSlide + 1);
-                };
+            // Si solo hay un slide (el configurado), ocultar botones de navegación
+            if (slides.length === 1) {
+                document.querySelector('.slider-nav.prev').style.display = 'none';
+                document.querySelector('.slider-nav.next').style.display = 'none';
+            }
 
-            } else {
-                // --- SI ES IMAGEN ---
-                
-                // Ocultar el botón de mute (si existe)
-                if (muteButton) muteButton.style.display = 'none'; 
-                
-                // Iniciar el temporizador normal de 7 segundos
-                slideTimer = setTimeout(() => {
+            // 7. Eventos de los botones de navegación
+            if (nextButton && prevButton) {
+                nextButton.addEventListener('click', () => {
                     showSlide(currentSlide + 1);
-                }, 7000);
+                });
+                prevButton.addEventListener('click', () => {
+                    showSlide(currentSlide - 1);
+                });
+            }
+
+            // 8. Iniciar el slider (solo si hay slides)
+            if (slides.length > 0) {
+                showSlide(currentSlide);
             }
         }
-
-        // 7. Eventos de los botones de navegación
-        if (nextButton && prevButton) {
-            nextButton.addEventListener('click', () => {
-                showSlide(currentSlide + 1);
-            });
-            prevButton.addEventListener('click', () => {
-                showSlide(currentSlide - 1);
-            });
-        }
-
-        // 8. Iniciar el slider (solo si hay slides)
-        if (slides.length > 0) {
-            showSlide(currentSlide);
-        }
-
 
         // ----------------------------------------------------------------------------------
         // --- NUEVO CÓDIGO PARA BORRAR LA BARRA DE BÚSQUEDA ---

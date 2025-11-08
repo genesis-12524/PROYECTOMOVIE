@@ -21,6 +21,8 @@ namespace PROYECTOMOVIE.Data
         public DbSet<UsuarioSuscripcion> UsuarioSuscripciones { get; set; }
         public DbSet<UsuarioSerie> UsuarioSeries { get; set; }
         public DbSet<UsuarioPelicula> UsuarioPeliculas { get; set; }
+
+        public DbSet<VideoConfigPortada> VideoConfigPortadas { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
