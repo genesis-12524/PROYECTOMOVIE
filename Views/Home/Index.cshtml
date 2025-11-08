@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@*
+    NOTA: El modelo para esta vista (Index.cshtml) debe ser el mismo
+    que el de ResultadosBusqueda.cshtml, es decir, 'VerPorLista'
+*@
+@model PROYECTOMOVIE.Models.VerPorLista
+
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -126,9 +132,9 @@
             
                     <div class="search-input-wrapper">
                         <input type="text" 
-                            name="terminoBusqueda" 
-                            placeholder="Buscar por título..." 
-                            class="search-block-input">
+                               name="terminoBusqueda" 
+                               placeholder="Buscar por título..." 
+                               class="search-block-input">
                         <i class="fa-solid fa-xmark search-clear-icon"></i>
                     </div>
                     
@@ -154,39 +160,6 @@
 
         <div class="content-area container">
 
-            <section class="content-row">
-                <h2 class="row-title">
-                    <span>Añadidas recientemente</span>
-                    <a href="#">Ver más <i class="fa-solid fa-angle-right"></i></a>
-                </h2>
-                <div class="posters-container">
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/together.png" alt="Together">
-                        <div class="poster-info">
-                            <div class="title">Together</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/elio.jpg" alt="Elio">
-                        <div class="poster-info">
-                            <div class="title">Elio</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/caminaomuere.jpeg" alt="Camina o muere">
-                        <div class="poster-info">
-                            <div class="title">Camina o muere</div>
-                        </div>
-                    </div>
-                    <div class="poster-card">
-                        <img src="~/IMG/img pelis/comoentrenar.jpeg" alt="Como entrenar a tu Dragón">
-                        <div class="poster-info">
-                            <div class="title">Como entrenar a tu Dragón</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
            <section class="content-row">
                 <h2 class="row-title">
                     <span>Películas</span>
@@ -198,19 +171,27 @@
                     @* Bucle para dibujar cada película del ViewModel *@
                     @foreach (var pelicula in Model.Peliculas)
                     {
-                        @* Usamos un <a> para que cada tarjeta sea un link a la página de Detalles.
-                           Asumo que tu página de detalles se llama 'Detalles'
+                        @*
+                           --- INICIO DE LA CORRECCIÓN ---
+                           Ahora es UN solo <a> que envuelve un <div>
                         *@
-                        <a href="/Home/Detalles/@pelicula.Id" class="poster-card">
-                            <img src="~/IMG/img-pelis/@pelicula.ImagenPublicId" alt="@pelicula.Nombre_Peli">
-                            <div class="poster-info">
-                                <div class="title">@pelicula.Nombre_Peli</div>
+                        <a asp-controller="Home" 
+                           asp-action="PeliculaDetalle" 
+                           asp-route-id="@pelicula.Id" 
+                           class="poster-link-wrapper">
+
+                            @* Esto ahora es un DIV, no un <a> *@
+                            <div class="poster-card">
+                                <img src="~/IMG/img-pelis/@pelicula.ImagenPublicId" alt="@pelicula.Nombre_Peli">
+                                <div class="poster-info">
+                                    <div class="title">@pelicula.Nombre_Peli</div>
+                                </div>
                             </div>
                         </a>
+                        @* --- FIN DE LA CORRECCIÓN --- *@
                     }
                     
                     @* Si no hay películas, puedes mostrar un mensaje *@
-                    @* LÍNEA CORREGIDA *@
                     @if (Model.Peliculas.Count == 0)
                     {
                         <p>No hay películas para mostrar en este momento.</p>
@@ -230,20 +211,28 @@
                     @* Bucle para dibujar cada serie del ViewModel *@
                     @foreach (var serie in Model.Series)
                     {
-                        @* Asumo que tienes una página de detalles para series, 
-                           quizás '/Home/DetallesSerie/@serie.Id' 
+                        @*
+                           --- INICIO DE LA CORRECCIÓN 2 ---
+                           Actualizado para usar asp-action="SerieDetalle"
                         *@
-                        <a href="/Home/DetallesSerie/@serie.Id" class="poster-card">
-                            <img src="~/IMG/img-pelis/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
-                            <div class="poster-info">
-                                <div class="title">@serie.Nombre_Serie</div>
+                        <a asp-controller="Home"
+                           asp-action="SerieDetalle"
+                           asp-route-id="@serie.Id"
+                           class="poster-link-wrapper">
+                        
+                            <div class="poster-card">
+                                <img src="~/IMG/img-pelis/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                                <div class="poster-info">
+                                    <div class="title">@serie.Nombre_Serie</div>
+                                </div>
                             </div>
                         </a>
+                        @* --- FIN DE LA CORRECCIÓN 2 --- *@
                     }
 
                     @* Si no hay series, puedes mostrar un mensaje *@
-                    @* LÍNEA CORREGIDA *@
-                    @if (Model.Peliculas.Count == 0)
+                    @* LÍNEA CORREGIDA (debe chequear Model.Series, no Model.Peliculas) *@
+                    @if (Model.Series.Count == 0)
                     {
                         <p>No hay series para mostrar en este momento.</p>
                     }
@@ -259,6 +248,7 @@
         </div>
     </footer>
 
+@* El JavaScript se mantiene igual *@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // --- CÓDIGO DEL SLIDER DE HÉROE ---
@@ -349,15 +339,19 @@
         }
 
         // 7. Eventos de los botones de navegación
-        nextButton.addEventListener('click', () => {
-            showSlide(currentSlide + 1);
-        });
-        prevButton.addEventListener('click', () => {
-            showSlide(currentSlide - 1);
-        });
+        if (nextButton && prevButton) {
+            nextButton.addEventListener('click', () => {
+                showSlide(currentSlide + 1);
+            });
+            prevButton.addEventListener('click', () => {
+                showSlide(currentSlide - 1);
+            });
+        }
 
-        // 8. Iniciar el slider
-        showSlide(currentSlide);
+        // 8. Iniciar el slider (solo si hay slides)
+        if (slides.length > 0) {
+            showSlide(currentSlide);
+        }
 
 
         // ----------------------------------------------------------------------------------

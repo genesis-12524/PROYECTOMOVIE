@@ -1,181 +1,186 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using PROYECTOMOVIE.Models;
-using Microsoft.EntityFrameworkCore;
-using PROYECTOMOVIE.Data;
-// using AspNetCoreGeneratedDocument;
+    using System.Diagnostics;
+    using Microsoft.AspNetCore.Mvc;
+    using PROYECTOMOVIE.Models;
+    using Microsoft.EntityFrameworkCore;
+    using PROYECTOMOVIE.Data;
+    using System.Linq;
 
-namespace PROYECTOMOVIE.Controllers;
+    namespace PROYECTOMOVIE.Controllers;
 
-public class HomeController : Controller
-{
-    private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _context;
-
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+    public class HomeController : Controller
     {
-        _logger = logger;
-        _context = context;
-    }
+        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-    public IActionResult Index()
-    {
-        // 1. Crea una instancia del ViewModel
-        var viewModel = new VerPorLista();
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        {
+            _logger = logger;
+            _context = context;
+        }
 
-        // 2. Llena las listas desde la base de datos
-        // (Usamos .Take(10) para no cargar 1000 películas en la página principal)
-        viewModel.Peliculas = _context.Peliculas
-                                .OrderByDescending(p => p.Fecha_Publicada) // Ejemplo: más nuevas primero
-                                .Take(10) // Muestra solo las primeras 10
-                                .ToList();
-        
-        viewModel.Series = _context.Series // Asumo que tu tabla se llama 'Series'
-                                .OrderByDescending(s => s.Fecha_Publicada)
-                                .Take(10)
-                                .ToList();
-        return View(viewModel);
-    }
+        // --- 1. ACCIÓN INDEX (PÁGINA PRINCIPAL) ---
+        // Esta es la acción para la página principal (http://localhost:5162/)
+        // NO LLEVA PARÁMETROS.
+        // Carga solo 10 películas y 10 series (como la tenías al inicio).
+        public async Task<IActionResult> Index()
+        {
+            var viewModel = new VerPorLista();
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+            viewModel.Peliculas = await _context.Peliculas
+                                        .OrderByDescending(p => p.Fecha_Publicada)
+                                        .Take(10)
+                                        .ToListAsync();
+            
+            viewModel.Series = await _context.Series 
+                                        .OrderByDescending(s => s.Fecha_Publicada)
+                                        .Take(10)
+                                        .ToListAsync();
+            
+            // La página principal también podría necesitar las categorías
+            // (si es que tienes filtros en el Index también)
+            // Si no los tienes, puedes comentar esta línea.
+            viewModel.Categorias = await _context.Categoria.ToListAsync();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
+            return View(viewModel);
+        }
 
-    // --- Ventana ---
-    public IActionResult Series()
-    {
-        return View();
-    }
 
-    public IActionResult Pelis()
-    {
-        return View();
-    }
+        // --- 2. ACCIÓN PELIS (PÁGINA DE PELÍCULAS) ---
+        // Esta es la acción para la página de "Películas" (http://localhost:5162/Home/Pelis)
+        // SÍ LLEVA EL PARÁMETRO (int? categoriaId) para los filtros.
+        // Carga TODAS las películas (o las filtradas).
+        public async Task<IActionResult> Pelis(int? categoriaId)
+        {
+            var viewModel = new VerPorLista();
 
-    // --- 2. AQUÍ ESTÁ LA ACCIÓN DE BÚSQUEDA CORREGIDA ---
-    public async Task<IActionResult> Buscar(string terminoBusqueda)
-    {
-        // 1. Prepara las consultas base para ambas tablas
-            var peliculasQuery = from peli in _context.Peliculas
-                                    select peli;
-
-            // Asumimos que tu contexto tiene una tabla llamada "Series"
-            var seriesQuery = from serie in _context.Series 
-                            select serie;
-
-            // 2. Prepara el ViewModel que se enviará a la vista
-            //    Esta es la VARIABLE que usaremos
-            var viewModel = new VerPorLista
+            // --- Lógica de Películas (CON FILTRO) ---
+            if (categoriaId.HasValue && categoriaId > 0)
             {
-                TerminoBusqueda = terminoBusqueda
-            };
+                // MODO FILTRADO:
+                var categoriaFiltrada = await _context.Categoria
+                    .Include(c => c.Peliculas) 
+                    .FirstOrDefaultAsync(c => c.Id == categoriaId.Value);
 
-            // 3. Si el término no está vacío, filtra AMBAS consultas
-            if (!string.IsNullOrEmpty(terminoBusqueda))
+                if (categoriaFiltrada != null && categoriaFiltrada.Peliculas != null)
+                {
+                    viewModel.Peliculas = categoriaFiltrada.Peliculas
+                                                .OrderBy(p => p.Nombre_Peli)
+                                                .ToList();
+                }
+            }
+            else
             {
-                string terminoEnMinusculas = terminoBusqueda.ToLower();
-
-                // Filtrar películas
-                peliculasQuery = peliculasQuery.Where(
-                    p => p.Nombre_Peli != null &&
-                            p.Nombre_Peli.ToLower().Contains(terminoEnMinusculas)
-                );
-
-                // Filtrar series
-                // ¡Importante! Asumo que la propiedad se llama 'Nombre_Serie'. 
-                // Ajústala si se llama diferente en tu modelo 'Serie'.
-                seriesQuery = seriesQuery.Where(
-                    s => s.Nombre_Serie != null &&
-                            s.Nombre_Serie.ToLower().Contains(terminoEnMinusculas)
-                );
+                // MODO "VER TODOS":
+                viewModel.Peliculas = await _context.Peliculas
+                                            .OrderBy(p => p.Nombre_Peli)
+                                            .ToListAsync();
             }
 
-            // 4. Ejecuta las consultas y llena el ViewModel
-            //    (¡AQUÍ ESTÁ LA CORRECCIÓN!)
-            viewModel.Peliculas = await peliculasQuery.ToListAsync();
-            viewModel.Series = await seriesQuery.ToListAsync();
+            // --- Lógica de Categorías (PARA LOS BOTONES) ---
+            viewModel.Categorias = await _context.Categoria
+                                        .OrderBy(c => c.Nombre)
+                                        .ToListAsync();
 
-            // 5. Envía el ViewModel (la variable) a la vista "ResultadosBusqueda"
-            //    (¡AQUÍ ESTÁ LA OTRA CORRECCIÓN!)
-            return View("ResultadosBusqueda", viewModel);
-    }
-    
-    // --- 1. NUEVA ACCIÓN PARA EL BOTÓN "MODO ALEATORIO" ---
-    public async Task<IActionResult> Aleatorio()
-    {
-        // 1. Contamos cuántas películas hay
-        var count = await _context.Peliculas.CountAsync();
+            ViewData["SelectedCategoriaId"] = categoriaId; 
+
+            return View(viewModel);
+        }
         
-        if (count == 0)
+        // --- 3. RESTO DE ACCIONES ---
+        
+        // (Asegúrate de que la acción 'Series' tenga la misma lógica de filtro que 'Pelis')
+        public async Task<IActionResult> Series(int? categoriaId)
         {
-            // Si no hay películas, regresamos al Inicio
-            return RedirectToAction("Index"); 
+            var viewModel = new VerPorLista();
+
+            if (categoriaId.HasValue && categoriaId > 0)
+            {
+                var categoriaFiltrada = await _context.Categoria
+                    .Include(c => c.Series) // <-- CAMBIA A SERIES
+                    .FirstOrDefaultAsync(c => c.Id == categoriaId.Value);
+
+                if (categoriaFiltrada != null && categoriaFiltrada.Series != null)
+                {
+                    viewModel.Series = categoriaFiltrada.Series
+                                                .OrderBy(s => s.Nombre_Serie) // <-- CAMBIA A SERIES
+                                                .ToList();
+                }
+            }
+            else
+            {
+                viewModel.Series = await _context.Series
+                                            .OrderBy(s => s.Nombre_Serie) // <-- CAMBIA A SERIES
+                                            .ToListAsync();
+            }
+
+            viewModel.Categorias = await _context.Categoria
+                                        .OrderBy(c => c.Nombre)
+                                        .ToListAsync();
+
+            ViewData["SelectedCategoriaId"] = categoriaId; 
+            
+            return View(viewModel); // Necesitas una vista 'Series.cshtml'
         }
 
-        // 2. Generamos un número aleatorio (índice)
-        var random = new Random();
-        int index = random.Next(count); // Un número entre 0 y (total - 1)
-
-        // 3. Buscamos la película en ese índice
-        var randomPelicula = await _context.Peliculas
-                                        .Skip(index)
-                                        .FirstOrDefaultAsync();
-
-        if (randomPelicula == null)
+        public async Task<IActionResult> Buscar(string terminoBusqueda)
         {
-            return RedirectToAction("Index");
+            var viewModel = new VerPorLista { TerminoBusqueda = terminoBusqueda };
+
+            if (!string.IsNullOrEmpty(terminoBusqueda))
+            {
+                string terminoLower = terminoBusqueda.ToLower();
+                viewModel.Peliculas = await _context.Peliculas
+                    .Where(p => p.Nombre_Peli != null && p.Nombre_Peli.ToLower().Contains(terminoLower))
+                    .ToListAsync();
+                viewModel.Series = await _context.Series
+                    .Where(s => s.Nombre_Serie != null && s.Nombre_Serie.ToLower().Contains(terminoLower))
+                    .ToListAsync();
+            }
+            else
+            {
+                // Evita cargar todo si la búsqueda está vacía, mejor redirige
+                return RedirectToAction("Index"); // O a "Pelis" si lo prefieres
+            }
+            
+            return View("ResultadosBusqueda", viewModel);
         }
 
-        // 4. Redirigimos al usuario a la página de Detalles de esa película
-        // (Asumiendo que tu modelo 'Pelicula' tiene una propiedad 'Id')
-        // !! CORRECCIÓN SUGERIDA: 
-        //    Cambié "PeliculaAleDetalle" por "PeliculaDetalle" para que coincida 
-        //    con el nombre de tu acción de abajo.
-        return RedirectToAction("PeliculaDetalle", new { id = randomPelicula.Id }); 
+        public async Task<IActionResult> Aleatorio()
+        {
+            var count = await _context.Peliculas.CountAsync();
+            if (count == 0) return RedirectToAction("Index");
+            
+            var random = new Random();
+            int index = random.Next(count);
+            
+            var randomPelicula = await _context.Peliculas.Skip(index).FirstOrDefaultAsync();
+            if (randomPelicula == null) return RedirectToAction("Index");
+
+            return RedirectToAction("PeliculaDetalle", new { id = randomPelicula.Id }); 
+        }
+
+        public async Task<IActionResult> PeliculaDetalle(int id)
+        {
+            var pelicula = await _context.Peliculas.FindAsync(id);
+            if (pelicula == null) return NotFound();
+            return View("PeliculaDetalle", pelicula); // Necesitas 'PeliculaDetalle.cshtml'
+        }
+
+        public async Task<IActionResult> SerieDetalle(int id)
+        {
+            var serie = await _context.Series.FindAsync(id);
+            if (serie == null) return NotFound();
+            return View("SerieDetalle", serie); // Necesitas 'SerieDetalle.cshtml'
+        }
+        
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
-
-
-    // --- 2. NUEVA ACCIÓN Y PÁGINA PARA MOSTRAR DETALLES ---
-    // Esta acción responde a la URL: /Home/PeliculaDetalle/5 (por ejemplo)
-    public async Task<IActionResult> PeliculaDetalle(int id)
-    {
-        // Buscamos la película específica por su ID
-        var pelicula = await _context.Peliculas.FindAsync(id);
-
-        if (pelicula == null)
-        {
-            // Si no se encuentra, mostramos un error 404
-            return NotFound();
-        }
-
-        // Enviamos el objeto 'pelicula' a la nueva vista
-        // !! NOTA: El nombre de la vista debe ser "PeliculaDetalle.cshtml"
-        return View("PeliculaDetalle", pelicula);
-    }
-
-    // --- 3. ¡ACCIÓN AÑADIDA! ---
-    // Esta es la acción que faltaba para los detalles de las series.
-    // Responde a la URL: /Home/SerieDetalle/5 (por ejemplo)
-    public async Task<IActionResult> SerieDetalle(int id)
-    {
-        // Buscamos la serie específica por su ID
-        var serie = await _context.Series.FindAsync(id);
-
-        if (serie == null)
-        {
-            // Si no se encuentra, mostramos un error 404
-            return NotFound();
-        }
-
-        // Enviamos el objeto 'serie' a la nueva vista
-        // !! NOTA: Debes crear una vista llamada "SerieDetalle.cshtml"
-        return View("SerieDetalle", serie);
-    }
-}

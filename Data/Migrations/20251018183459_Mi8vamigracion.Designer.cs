@@ -166,10 +166,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.Property<DateTime>("Fecha_Publicada")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Genero")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Imagen_Peli")
                         .IsRequired()
                         .HasColumnType("TEXT");

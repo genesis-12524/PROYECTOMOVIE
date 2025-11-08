@@ -42,7 +42,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     Nombre_Peli = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Imagen_Peli = table.Column<string>(type: "TEXT", nullable: false),
                     Descripción = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
-                    Genero = table.Column<string>(type: "TEXT", nullable: false),
                     Enlace_Peli = table.Column<string>(type: "TEXT", nullable: false),
                     Tiempo_Duracion = table.Column<TimeSpan>(type: "TEXT", nullable: false),
                     Video_Trailer = table.Column<string>(type: "TEXT", nullable: false),

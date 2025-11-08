@@ -165,14 +165,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-3">
-                                        <label for="Genero" class="form-label">Género *</label>
-                                        <input type="text" class="form-control" id="Genero" name="Genero" required>
-                                        <div class="invalid-feedback">
-                                            Por favor ingresa el género.
-                                        </div>
-                                    </div>
-
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -292,7 +284,6 @@
                     </td>
                     <td class="fw-semibold">${pelicula.nombre_Peli}</td>
                     <td class="small">${pelicula.descripción || 'Sin descripción'}</td>
-                    <td><span class="badge bg-info">${pelicula.genero}</span></td>
                     <td>${pelicula.tiempo_Duracion}</td>
                     <td>${new Date(pelicula.fecha_Publicada).toLocaleDateString()}</td>
                     <td>
@@ -371,7 +362,6 @@
             const formData = new FormData();
             formData.append('Nombre_Peli', document.getElementById('Nombre_Peli').value);
             formData.append('Descripción', document.getElementById('Descripción').value);
-            formData.append('Genero', document.getElementById('Genero').value);
             formData.append('Tiempo_Duracion', document.getElementById('Tiempo_Duracion').value);
             formData.append('Fecha_Publicada', document.getElementById('Fecha_Publicada').value);
             formData.append('ImagenFile', document.getElementById('ImagenFile').files[0]);
@@ -511,7 +501,6 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <p><strong>Descripción:</strong> ${pelicula.descripción}</p>
-                                                <p><strong>Género:</strong> ${pelicula.genero}</p>
                                                 <p><strong>Duración:</strong> ${pelicula.tiempo_Duracion}</p>
                                                 <p><strong>Fecha de publicación:</strong> ${new Date(pelicula.fecha_Publicada).toLocaleDateString()}</p>
                                                 <div class="mt-3">

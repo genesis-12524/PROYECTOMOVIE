@@ -52,7 +52,6 @@ public class PeliculasController : ControllerBase
             {
                 Nombre_Peli = model.Nombre_Peli,
                 Descripción = model.Descripción,
-                Genero = model.Genero,
                 Tiempo_Duracion = model.Tiempo_Duracion,
                 Fecha_Publicada = model.Fecha_Publicada,
                 // IMAGEN
@@ -76,7 +75,6 @@ public class PeliculasController : ControllerBase
                 Imagen_Peli = pelicula.Imagen_Peli,
                 Video_Trailer = pelicula.Video_Trailer,
                 Enlace_Peli = pelicula.Enlace_Peli,
-                Genero = pelicula.Genero,
                 Fecha_Publicada = pelicula.Fecha_Publicada
             });
         }
@@ -96,7 +94,6 @@ public class PeliculasController : ControllerBase
                 p.Id,
                 p.Nombre_Peli,
                 p.Descripción,
-                p.Genero,
                 p.Imagen_Peli,
                 p.Video_Trailer,
                 p.Enlace_Peli,
@@ -118,7 +115,6 @@ public class PeliculasController : ControllerBase
                 p.Id,
                 p.Nombre_Peli,
                 p.Descripción,
-                p.Genero,
                 p.Imagen_Peli,
                 p.Video_Trailer,
                 p.Enlace_Peli,

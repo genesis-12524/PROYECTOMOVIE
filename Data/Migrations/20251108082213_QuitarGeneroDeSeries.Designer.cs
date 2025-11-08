@@ -11,14 +11,44 @@ using PROYECTOMOVIE.Data;
 namespace PROYECTOMOVIE.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251025202249_Mi10namigracion")]
-    partial class Mi10namigracion
+    [Migration("20251108082213_QuitarGeneroDeSeries")]
+    partial class QuitarGeneroDeSeries
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
+
+            modelBuilder.Entity("CategoriaPelicula", b =>
+                {
+                    b.Property<int>("CategoriasId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PeliculasId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CategoriasId", "PeliculasId");
+
+                    b.HasIndex("PeliculasId");
+
+                    b.ToTable("CategoriaPelicula");
+                });
+
+            modelBuilder.Entity("CategoriaSerie", b =>
+                {
+                    b.Property<int>("CategoriasId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SeriesId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CategoriasId", "SeriesId");
+
+                    b.HasIndex("SeriesId");
+
+                    b.ToTable("CategoriaSerie");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -164,6 +194,49 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Categoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categoria");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Acción"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Comedia"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nombre = "Drama"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nombre = "Ciencia Ficción"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nombre = "Terror"
+                        });
+                });
+
             modelBuilder.Entity("PROYECTOMOVIE.Models.Pelicula", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +341,49 @@ namespace PROYECTOMOVIE.Data.Migrations
                             Nombre = "Plan Premium",
                             Precio = 34.90m
                         });
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Serie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descripción")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Enlace_Serie")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Fecha_Publicada")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagenPublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Imagen_Serie")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nombre_Serie")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SeriePublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TrailerPublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Video_Trailer")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Series");
                 });
 
             modelBuilder.Entity("PROYECTOMOVIE.Models.Usuario", b =>
@@ -377,6 +493,33 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.ToTable("t_UsuarioPelicula");
                 });
 
+            modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioSerie", b =>
+                {
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Calificacion")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("EsFavorita")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("FechaAgregada")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Vista")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UsuarioId", "SerieId");
+
+                    b.HasIndex("SerieId");
+
+                    b.ToTable("t_UsuarioSerie");
+                });
+
             modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioSuscripcion", b =>
                 {
                     b.Property<int>("Id")
@@ -438,6 +581,36 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.HasIndex("Status", "NextBillingDate");
 
                     b.ToTable("UsuarioSuscripciones");
+                });
+
+            modelBuilder.Entity("CategoriaPelicula", b =>
+                {
+                    b.HasOne("PROYECTOMOVIE.Models.Categoria", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PROYECTOMOVIE.Models.Pelicula", null)
+                        .WithMany()
+                        .HasForeignKey("PeliculasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CategoriaSerie", b =>
+                {
+                    b.HasOne("PROYECTOMOVIE.Models.Categoria", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PROYECTOMOVIE.Models.Serie", null)
+                        .WithMany()
+                        .HasForeignKey("SeriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -510,6 +683,25 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioSerie", b =>
+                {
+                    b.HasOne("PROYECTOMOVIE.Models.Serie", "Serie")
+                        .WithMany("UsuarioSeries")
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PROYECTOMOVIE.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Serie");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("PROYECTOMOVIE.Models.UsuarioSuscripcion", b =>
                 {
                     b.HasOne("PROYECTOMOVIE.Models.PlanSubcripcion", "Plan")
@@ -541,6 +733,11 @@ namespace PROYECTOMOVIE.Data.Migrations
             modelBuilder.Entity("PROYECTOMOVIE.Models.PlanSubcripcion", b =>
                 {
                     b.Navigation("UsuarioSuscripcion");
+                });
+
+            modelBuilder.Entity("PROYECTOMOVIE.Models.Serie", b =>
+                {
+                    b.Navigation("UsuarioSeries");
                 });
 
             modelBuilder.Entity("PROYECTOMOVIE.Models.Usuario", b =>
