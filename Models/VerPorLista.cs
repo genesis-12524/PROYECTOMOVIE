@@ -12,6 +12,7 @@ namespace PROYECTOMOVIE.Models // O el namespace que estés usando
         public List<Serie> Series { get; set; } // Asumo que tienes un modelo 'Serie'
         public List<Categoria> Categorias { get; set; } // <-- ¡NUEVA LÍNEA!
         public string? TerminoBusqueda { get; set; }
+        public string? Imagen_Peli { get; set; }
 
         // Constructor para inicializar las listas y evitar errores
         public VerPorLista()

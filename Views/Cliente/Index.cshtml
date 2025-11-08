@@ -67,7 +67,7 @@
                         <div class="hero-actions">
                             <button class="btn-watch">
                                 <i class="fa-solid fa-play"></i>
-                                Próximamente en Disney+
+                                Próximamente
                             </button>
                             <button class="btn-icon-action"><i class="fa-solid fa-plus"></i></button>
                             <button class="btn-icon-action"><i class="fa-solid fa-info"></i></button>
@@ -183,7 +183,7 @@
 
                             @* Esto ahora es un DIV, no un <a> *@
                             <div class="poster-card">
-                                <img src="~/IMG/img-pelis/@pelicula.ImagenPublicId" alt="@pelicula.Nombre_Peli">
+                                <img src="@pelicula.Imagen_Peli" alt="@pelicula.Nombre_Peli">
                                 <div class="poster-info">
                                     <div class="title">@pelicula.Nombre_Peli</div>
                                 </div>
@@ -222,7 +222,7 @@
                            class="poster-link-wrapper">
                         
                             <div class="poster-card">
-                                <img src="~/IMG/img-pelis/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                                <img src="@serie.Imagen_Serie" alt="@serie.Nombre_Serie">
                                 <div class="poster-info">
                                     <div class="title">@serie.Nombre_Serie</div>
                                 </div>

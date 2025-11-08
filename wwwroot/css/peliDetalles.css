@@ -254,17 +254,33 @@ main{
 }
 
 .details-poster {
-    flex-shrink: 0;
-    width: 300px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    /* Define el ancho que deseas */
+    width: 300px; 
+    
+    /* Define la altura para que sea horizontal (ej. proporción 16:9) */
+    height: 170px; 
+    
+    /* Importante: oculta lo que se salga del contenedor */
+    overflow: hidden; 
+    
+    /* Extras para que se vea bien */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    flex-shrink: 0; /* Evita que se encoja si hay mucho texto */
 }
 
 .details-poster img {
+    /* Rellena el 100% del contenedor que definimos arriba */
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
+    
+    /* Esta es la propiedad mágica:
+       Cubre todo el espacio, recorta lo que sobre, pero NO deforma la imagen.
+    */
+    object-fit: cover;
+    
+    /* Opcional: Centra la imagen (puedes usar 'center top' si prefieres) */
+    object-position: center; 
 }
 
 .details-info {
