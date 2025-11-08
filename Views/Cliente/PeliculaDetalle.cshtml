@@ -75,8 +75,22 @@
             </div>
         </div>
 
+        <div class="movie-player-container" style="padding: 3rem 4%; background: #0a0a0a; text-align: center;"> 
+            
+            <h2 style="color: white; margin-bottom: 2rem; font-size: 2.2rem; font-weight: bold;">
+                Ver ahora: @Model.Nombre_Peli
+            </h2>
+            
+            <video id="movie-player" controls preload="metadata" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                
+                <source src="@Model.PeliculaPublicId" type="video/mp4">
+
+                Tu navegador no soporta la reproducción de video.
+            </video>
+            
+        </div>
         <div class="reviews-section">
-             </div>
+            </div>
     </main>
 
 
