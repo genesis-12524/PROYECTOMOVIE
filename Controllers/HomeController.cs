@@ -59,7 +59,12 @@ public class HomeController : Controller
         return View();
     }
 
-    // --- 2. AQUÍ ESTÁ LA ACCIÓN DE BÚSQUEDA CORREGIDA ---
+    public IActionResult Gemini()
+    {
+        return View();
+    }
+
+    // --- 2. AQUÍ ESTÁ LA NUEVA ACCIÓN DE BÚSQUEDA ---
     public async Task<IActionResult> Buscar(string terminoBusqueda)
     {
         // 1. Prepara las consultas base para ambas tablas
