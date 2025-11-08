@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PROYECTOMOVIE.Models;
 using Microsoft.EntityFrameworkCore;
 using PROYECTOMOVIE.Data;
+// using AspNetCoreGeneratedDocument;
 
 namespace PROYECTOMOVIE.Controllers;
 
@@ -19,12 +20,11 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-
         // 1. Crea una instancia del ViewModel
         var viewModel = new VerPorLista();
 
         // 2. Llena las listas desde la base de datos
-        //    (Usamos .Take(10) para no cargar 1000 películas en la página principal)
+        // (Usamos .Take(10) para no cargar 1000 películas en la página principal)
         viewModel.Peliculas = _context.Peliculas
                                 .OrderByDescending(p => p.Fecha_Publicada) // Ejemplo: más nuevas primero
                                 .Take(10) // Muestra solo las primeras 10
@@ -59,33 +59,52 @@ public class HomeController : Controller
         return View();
     }
 
-    // --- 2. AQUÍ ESTÁ LA NUEVA ACCIÓN DE BÚSQUEDA ---
+    // --- 2. AQUÍ ESTÁ LA ACCIÓN DE BÚSQUEDA CORREGIDA ---
     public async Task<IActionResult> Buscar(string terminoBusqueda)
     {
-        // 3. Prepara la consulta
-        var peliculasQuery = from peli in _context.Peliculas
-                             select peli;
+        // 1. Prepara las consultas base para ambas tablas
+            var peliculasQuery = from peli in _context.Peliculas
+                                    select peli;
 
-        // 4. Si el término no está vacío, filtra la consulta
-        if (!string.IsNullOrEmpty(terminoBusqueda))
-        {
+            // Asumimos que tu contexto tiene una tabla llamada "Series"
+            var seriesQuery = from serie in _context.Series 
+                            select serie;
 
-            // para que la comparación sea insensible a mayúsculas/minúsculas.
-            string terminoEnMinusculas = terminoBusqueda.ToLower();
+            // 2. Prepara el ViewModel que se enviará a la vista
+            //    Esta es la VARIABLE que usaremos
+            var viewModel = new VerPorLista
+            {
+                TerminoBusqueda = terminoBusqueda
+            };
 
-            peliculasQuery = peliculasQuery.Where(
-                p => p.Nombre_Peli != null && 
-                    p.Nombre_Peli.ToLower().Contains(terminoEnMinusculas)
-        );
-        }
+            // 3. Si el término no está vacío, filtra AMBAS consultas
+            if (!string.IsNullOrEmpty(terminoBusqueda))
+            {
+                string terminoEnMinusculas = terminoBusqueda.ToLower();
 
-        // 5. Ejecuta la consulta y envía los resultados a una NUEVA vista
-        var peliculas = await peliculasQuery.ToListAsync();
+                // Filtrar películas
+                peliculasQuery = peliculasQuery.Where(
+                    p => p.Nombre_Peli != null &&
+                            p.Nombre_Peli.ToLower().Contains(terminoEnMinusculas)
+                );
 
-        // Pasamos el término de búsqueda a la vista, para poder mostrarlo
-        ViewData["TerminoBusqueda"] = terminoBusqueda;
+                // Filtrar series
+                // ¡Importante! Asumo que la propiedad se llama 'Nombre_Serie'. 
+                // Ajústala si se llama diferente en tu modelo 'Serie'.
+                seriesQuery = seriesQuery.Where(
+                    s => s.Nombre_Serie != null &&
+                            s.Nombre_Serie.ToLower().Contains(terminoEnMinusculas)
+                );
+            }
 
-        return View("ResultadosBusqueda", peliculas);
+            // 4. Ejecuta las consultas y llena el ViewModel
+            //    (¡AQUÍ ESTÁ LA CORRECCIÓN!)
+            viewModel.Peliculas = await peliculasQuery.ToListAsync();
+            viewModel.Series = await seriesQuery.ToListAsync();
+
+            // 5. Envía el ViewModel (la variable) a la vista "ResultadosBusqueda"
+            //    (¡AQUÍ ESTÁ LA OTRA CORRECCIÓN!)
+            return View("ResultadosBusqueda", viewModel);
     }
     
     // --- 1. NUEVA ACCIÓN PARA EL BOTÓN "MODO ALEATORIO" ---
@@ -105,11 +124,9 @@ public class HomeController : Controller
         int index = random.Next(count); // Un número entre 0 y (total - 1)
 
         // 3. Buscamos la película en ese índice
-        // (Nota: Skip() puede ser lento en bases de datos gigantes,
-        // pero es perfecto para la mayoría de proyectos)
         var randomPelicula = await _context.Peliculas
-                                           .Skip(index)
-                                           .FirstOrDefaultAsync();
+                                        .Skip(index)
+                                        .FirstOrDefaultAsync();
 
         if (randomPelicula == null)
         {
@@ -118,7 +135,10 @@ public class HomeController : Controller
 
         // 4. Redirigimos al usuario a la página de Detalles de esa película
         // (Asumiendo que tu modelo 'Pelicula' tiene una propiedad 'Id')
-        return RedirectToAction("PeliculaAleDetalle", new { id = randomPelicula.Id }); 
+        // !! CORRECCIÓN SUGERIDA: 
+        //    Cambié "PeliculaAleDetalle" por "PeliculaDetalle" para que coincida 
+        //    con el nombre de tu acción de abajo.
+        return RedirectToAction("PeliculaDetalle", new { id = randomPelicula.Id }); 
     }
 
 
@@ -136,8 +156,26 @@ public class HomeController : Controller
         }
 
         // Enviamos el objeto 'pelicula' a la nueva vista
-        return View("PeliculaAleDetalle", pelicula);
+        // !! NOTA: El nombre de la vista debe ser "PeliculaDetalle.cshtml"
+        return View("PeliculaDetalle", pelicula);
+    }
+
+    // --- 3. ¡ACCIÓN AÑADIDA! ---
+    // Esta es la acción que faltaba para los detalles de las series.
+    // Responde a la URL: /Home/SerieDetalle/5 (por ejemplo)
+    public async Task<IActionResult> SerieDetalle(int id)
+    {
+        // Buscamos la serie específica por su ID
+        var serie = await _context.Series.FindAsync(id);
+
+        if (serie == null)
+        {
+            // Si no se encuentra, mostramos un error 404
+            return NotFound();
+        }
+
+        // Enviamos el objeto 'serie' a la nueva vista
+        // !! NOTA: Debes crear una vista llamada "SerieDetalle.cshtml"
+        return View("SerieDetalle", serie);
     }
 }
-
-
