@@ -1,0 +1,250 @@
+@* PASO 1: Definir el modelo que esta vista espera recibir *@
+@model PROYECTOMOVIE.Models.VerPorLista
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+
+    @* PASO 2: Añadir el mismo bloque de CSS de Pelis.cshtml *@
+    <style>
+        html, body {
+            height: 100%; 
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1; 
+        }
+
+        /* --- SECCIÓN DE FILTRO DE GÉNERO --- */
+        .genre-filter-section {
+            padding-top: 0; /* Espacio reducido arriba */
+            padding-bottom: 20px; /* Espacio abajo */
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 10px; 
+            justify-content: center; 
+        }
+        
+        .btn-genre {
+            background-color: var(--accent, #222);
+            color: #f0f0f0; 
+            border: 1px solid #444; /* Borde sutil */
+            padding: 8px 16px;
+            border-radius: 20px; 
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-genre:hover {
+            background-color: #006b96;
+            color: #fff;
+            border-color: #006b96;
+        }
+
+        .btn-genre.active {
+            background-color: #555;
+            color: #fff;
+            border-color: #555;
+            font-weight: 700;
+        }
+
+        /* --- CUADRÍCULA DE PÓSTERS --- */
+        .posters-container {
+            display: grid;
+            gap: 40px; 
+            padding-top: 10px;
+            grid-template-columns: repeat(2, 1fr); /* Móvil (default) */
+        }
+        
+        /* Tablet */
+        @@media (min-width: 768px) {
+            .posters-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Escritorio */
+        @@media (min-width: 1024px) {
+            .posters-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .poster-link-wrapper {
+            display: block; 
+            text-decoration: none;
+        }
+
+        .poster-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series" class="nav-active">Series</a> @* <-- Marcado como activo *@
+            <a href="#">Popular</a>
+            <a href="/Cliente/ListasCliente">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+    
+    @* PASO 3: Actualizar el formulario de búsqueda *@
+    <section class="search-block-section">
+            <div class="container">
+                <h2>¿No sabes qué ver?</h2>
+                
+                <form asp-controller="Cliente" asp-action="Buscar" method="get" class="search-block-container">
+            
+                    <div class="search-input-wrapper">
+                        <input type="text" 
+                               name="terminoBusqueda" 
+                               placeholder="Buscar por título..." 
+                               class="search-block-input">
+                        <i class="fa-solid fa-xmark search-clear-icon"></i>
+                    </div>
+                    
+                    <div class="search-buttons-container">
+                        <button type="submit" asp-action="Buscar" class="btn-buscar">Buscar</button>
+                        <button type="submit" asp-action="Aleatorio" class="btn-aleatorio" formmethod="get"> Modo Aleatorio</button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    <div class="content-area container">
+
+        @* PASO 4: Añadir la sección de filtro de géneros *@
+        <section class="genre-filter-section">
+            @{
+                var selectedId = ViewData["SelectedCategoriaId"] as int?;
+            }
+
+            <!-- Botón "Todos" que apunta a la acción "Series" -->
+            <a asp-controller="Cliente"
+               asp-action="Series"
+               asp-route-categoriaId=""
+               class="btn-genre @(selectedId == null ? "active" : "")">
+               Todos
+            </a>
+
+            @if (Model.Categorias != null && Model.Categorias.Any())
+            {
+                @foreach (var categoria in Model.Categorias)
+                {
+                    <!-- Botones que apuntan a la acción "Series" con ID -->
+                    <a asp-controller="Cliente"
+                       asp-action="Series"
+                       asp-route-categoriaId="@categoria.Id"
+                       class="btn-genre @(selectedId == categoria.Id ? "active" : "")">
+                       @categoria.Nombre
+                    </a>
+                }
+            }
+        </section>
+
+
+        @* PASO 5: Reemplazar el contenido estático por la cuadrícula dinámica *@
+        <div class="posters-container">
+            
+            @if (Model.Series != null && Model.Series.Any())
+            {
+                @foreach (var serie in Model.Series)
+                {
+                    <a asp-controller="Cliente"
+                       asp-action="SerieDetalle"
+                       asp-route-id="@serie.Id"
+                       class="poster-link-wrapper">
+
+                        <div class="poster-card">
+                            <img src="~/IMG/img-series/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                            <div class="poster-info">
+                                <div class="title">@serie.Nombre_Serie</div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <p style="grid-column: 1 / -1; text-align: center; color: var(--muted);">
+                    No se encontraron series para esta categoría.
+                </p>
+            }
+
+        </div>
+
+    </div>
+</main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - PROYECTOMOVIE
+        </div>
+    </footer>
+
+    @* PASO 6: Añadir el mismo JS de Pelis.cshtml *@
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputField = document.querySelector('.search-block-input');
+        const clearIcon = document.querySelector('.search-clear-icon');
+
+        if (inputField && clearIcon) {
+            
+            function clearSearchInput() {
+                inputField.value = '';
+                inputField.focus();
+                toggleClearIcon();
+            }
+
+            function toggleClearIcon() {
+                if (inputField.value.length > 0) {
+                    clearIcon.style.display = 'block'; 
+                } else {
+                    clearIcon.style.display = 'none';
+                }
+            }
+            
+            clearIcon.addEventListener('click', clearSearchInput);
+            inputField.addEventListener('input', toggleClearIcon);
+            toggleClearIcon(); 
+        }
+    });
+    </script>
+
+    </body>
+</html>

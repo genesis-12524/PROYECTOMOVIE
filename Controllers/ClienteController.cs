@@ -1,75 +1,61 @@
-using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using PROYECTOMOVIE.Models;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using PROYECTOMOVIE.Data;
+using PROYECTOMOVIE.Models;
 
 namespace PROYECTOMOVIE.Controllers
 {
+    [Authorize] // 🔒 Solo usuarios autenticados podrán acceder
     public class ClienteController : Controller
     {
         private readonly ILogger<ClienteController> _logger;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
 
         public ClienteController(
             ILogger<ClienteController> logger,
+            ApplicationDbContext context,
             UserManager<Usuario> userManager,
             SignInManager<Usuario> signInManager)
         {
             _logger = logger;
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
         }
 
-        // Página principal del cliente - REDIRIGE A PLANES SI NO TIENE PLAN
+        // === VISTA PRINCIPAL DEL CLIENTE ===
         public IActionResult Index()
         {
-            try
+            var viewModel = new VerPorLista
             {
-                // Verificar si el usuario tiene un plan seleccionado (usando Session)
-                var planSeleccionado = HttpContext.Session?.GetString("PlanSeleccionado");
-                
-                if (User.Identity?.IsAuthenticated == true && string.IsNullOrEmpty(planSeleccionado))
-                {
-                    _logger.LogInformation("Usuario sin plan - Redirigiendo a Planes");
-                    return RedirectToAction("Planes", "Cliente");
-                }
+                Peliculas = _context.Peliculas
+                    .OrderByDescending(p => p.Fecha_Publicada)
+                    .Take(10)
+                    .ToList(),
+                Series = _context.Series
+                    .OrderByDescending(s => s.Fecha_Publicada)
+                    .Take(10)
+                    .ToList()
+            };
 
-                _logger.LogInformation("Accediendo a Cliente/Index - Vista principal");
-                
-                // Mostrar mensaje temporal si acaba de seleccionar un plan
-                if (TempData["MensajeExito"] != null)
-                {
-                    ViewBag.MensajeExito = TempData["MensajeExito"];
-                    ViewBag.PlanSeleccionado = planSeleccionado;
-                }
-                
-                return View();
-            }
-            catch
-            {
-                // Si hay error con Session, redirigir a Planes por seguridad
-                if (User.Identity?.IsAuthenticated == true)
-                {
-                    return RedirectToAction("Planes", "Cliente");
-                }
-                return View();
-            }
+            return View(viewModel); // 🔹 Muestra Views/Cliente/Index.cshtml
         }
 
         // === LOGIN ===
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
-            // Limpiar session al mostrar el login
-            HttpContext.Session?.Remove("PlanSeleccionado");
-            
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password, string? returnUrl = null)
@@ -80,13 +66,9 @@ namespace PROYECTOMOVIE.Controllers
                 var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation($"Login exitoso - Redirigiendo a Planes");
-                    
-                    // Limpiar session al hacer login
-                    HttpContext.Session?.Remove("PlanSeleccionado");
-                    
-                    // ✅ REDIRECCIÓN DIRECTA A PLANES después del login
-                    return RedirectToAction("Planes", "Cliente");
+                    _logger.LogInformation($"✅ Login exitoso de {user.Email}");
+                    // 🔹 Redirige al "Home privado" → Cliente/Index
+                    return RedirectToAction("Index", "Cliente");
                 }
             }
 
@@ -94,113 +76,201 @@ namespace PROYECTOMOVIE.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            // Limpiar todo al hacer logout
-            HttpContext.Session?.Clear();
-            TempData.Clear();
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Cliente");
-        }
-
-        // === MOSTRAR VISTA DE PLANES DESPUÉS DEL LOGIN ===
+        // === REGISTRO ===
+        [AllowAnonymous]
         [HttpGet]
-        [Authorize]
-        public IActionResult Planes()
+        public IActionResult Registro()
         {
-            _logger.LogInformation("Accediendo a Cliente/Planes");
             return View();
         }
 
-        // === ACCIÓN AL ELEGIR UN PLAN ===
+        [AllowAnonymous]
         [HttpPost]
-        [Authorize]
-        public IActionResult SeleccionarPlan(string plan)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Registro(Usuario model, string password)
         {
-            _logger.LogInformation($"✅ Plan seleccionado: {plan}");
-    
-            // Guarda el plan en SESSION (persistente)
-            HttpContext.Session?.SetString("PlanSeleccionado", plan);
-            
-            // Mensaje temporal para mostrar una sola vez
-            TempData["MensajeExito"] = $"¡Plan {plan} seleccionado correctamente!";
-
-            _logger.LogInformation($"✅ Redirigiendo a Cliente/Index...");
-    
-            // ✅ Redirige al Cliente/Index
-            return RedirectToAction("Index", "Cliente");
-        }
-
-        // === PERFIL DEL USUARIO ===
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Perfil()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Cliente");
-
-            var model = new EditarPerfilViewModel
+            if (ModelState.IsValid)
             {
-                Nombre = user.Nombre ?? string.Empty,
-                Apellido = user.Apellido ?? string.Empty,
-                Email = user.Email ?? string.Empty
-            };
+                var user = new Usuario
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Nombre = model.Nombre,
+                    Apellido = model.Apellido
+                };
+
+                var result = await _userManager.CreateAsync(user, password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation($"🟢 Nuevo usuario registrado: {user.Email}");
+                    // 🔹 Después del registro, también va al “Home privado”
+                    return RedirectToAction("Index", "Cliente");
+                }
+
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+            }
 
             return View(model);
         }
 
+        // === LOGOUT ===
         [HttpPost]
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Perfil(EditarPerfilViewModel model)
+        public async Task<IActionResult> Logout()
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("🔴 Usuario cerró sesión.");
+            return RedirectToAction("Index", "Home");
+        }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Cliente");
+        // === FUNCIONALIDADES INTERNAS ===
 
-            user.Nombre = model.Nombre;
-            user.Apellido = model.Apellido;
-            user.Email = model.Email;
-            user.UserName = model.Email;
+        public async Task<IActionResult> Buscar(string terminoBusqueda)
+        {
+            var peliculasQuery = from peli in _context.Peliculas select peli;
+            var seriesQuery = from serie in _context.Series select serie;
 
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!string.IsNullOrEmpty(model.PasswordNueva))
+            var viewModel = new VerPorLista
             {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var cambio = await _userManager.ResetPasswordAsync(user, token, model.PasswordNueva);
-                if (!cambio.Succeeded)
-                {
-                    ModelState.AddModelError("", "Error al cambiar contraseña.");
-                    return View(model);
-                }
+                TerminoBusqueda = terminoBusqueda
+            };
+
+            if (!string.IsNullOrEmpty(terminoBusqueda))
+            {
+                string terminoEnMinusculas = terminoBusqueda.ToLower();
+
+                peliculasQuery = peliculasQuery.Where(
+                    p => p.Nombre_Peli != null && p.Nombre_Peli.ToLower().Contains(terminoEnMinusculas)
+                );
+
+                seriesQuery = seriesQuery.Where(
+                    s => s.Nombre_Serie != null && s.Nombre_Serie.ToLower().Contains(terminoEnMinusculas)
+                );
             }
 
-            if (result.Succeeded)
+            viewModel.Peliculas = await peliculasQuery.ToListAsync();
+            viewModel.Series = await seriesQuery.ToListAsync();
+
+            return View("ResultadosBusqueda", viewModel);
+        }
+
+        public async Task<IActionResult> Aleatorio()
+        {
+            var count = await _context.Peliculas.CountAsync();
+            if (count == 0)
+                return RedirectToAction("Index");
+
+            var random = new Random();
+            int index = random.Next(count);
+            var randomPelicula = await _context.Peliculas.Skip(index).FirstOrDefaultAsync();
+
+            if (randomPelicula == null)
+                return RedirectToAction("Index");
+
+            return RedirectToAction("PeliculaDetalle", new { id = randomPelicula.Id });
+        }
+
+        public async Task<IActionResult> PeliculaDetalle(int id)
+        {
+            var pelicula = await _context.Peliculas.FindAsync(id);
+            if (pelicula == null)
+                return NotFound();
+
+            return View("PeliculaDetalle", pelicula);
+        }
+
+        public async Task<IActionResult> SerieDetalle(int id)
+        {
+            var serie = await _context.Series.FindAsync(id);
+            if (serie == null)
+                return NotFound();
+
+            return View("SerieDetalle", serie);
+        }
+
+        // === ACCIÓN PELIS (PÁGINA DE PELÍCULAS CON FILTROS) ===
+        public async Task<IActionResult> Pelis(int? categoriaId)
+        {
+            var viewModel = new VerPorLista();
+
+            // --- Lógica de Películas (CON FILTRO) ---
+            if (categoriaId.HasValue && categoriaId > 0)
             {
-                await _signInManager.RefreshSignInAsync(user);
-                ViewBag.Mensaje = "Perfil actualizado correctamente.";
+                // MODO FILTRADO:
+                var categoriaFiltrada = await _context.Categoria
+                    .Include(c => c.Peliculas)
+                    .FirstOrDefaultAsync(c => c.Id == categoriaId.Value);
+
+                if (categoriaFiltrada != null && categoriaFiltrada.Peliculas != null)
+                {
+                    viewModel.Peliculas = categoriaFiltrada.Peliculas
+                                                .OrderBy(p => p.Nombre_Peli)
+                                                .ToList();
+                }
             }
             else
             {
-                ModelState.AddModelError("", "No se pudo actualizar el perfil.");
+                // MODO "VER TODOS":
+                viewModel.Peliculas = await _context.Peliculas
+                                            .OrderBy(p => p.Nombre_Peli)
+                                            .ToListAsync();
             }
 
-            return View(model);
-        }
-    }
+            // --- Lógica de Categorías (PARA LOS BOTONES) ---
+            viewModel.Categorias = await _context.Categoria
+                                        .OrderBy(c => c.Nombre)
+                                        .ToListAsync();
 
-    // === VIEWMODEL ===
-    public class EditarPerfilViewModel
-    {
-        public string Nombre { get; set; } = string.Empty;
-        public string Apellido { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string? PasswordNueva { get; set; }
+            ViewData["SelectedCategoriaId"] = categoriaId;
+
+            return View(viewModel);
+        }
+
+        // === ACCIÓN SERIES (PÁGINA DE SERIES CON FILTROS) ===
+        public async Task<IActionResult> Series(int? categoriaId)
+        {
+            var viewModel = new VerPorLista();
+
+            if (categoriaId.HasValue && categoriaId > 0)
+            {
+                var categoriaFiltrada = await _context.Categoria
+                    .Include(c => c.Series)
+                    .FirstOrDefaultAsync(c => c.Id == categoriaId.Value);
+
+                if (categoriaFiltrada != null && categoriaFiltrada.Series != null)
+                {
+                    viewModel.Series = categoriaFiltrada.Series
+                                                .OrderBy(s => s.Nombre_Serie)
+                                                .ToList();
+                }
+            }
+            else
+            {
+                viewModel.Series = await _context.Series
+                                            .OrderBy(s => s.Nombre_Serie)
+                                            .ToListAsync();
+            }
+
+            viewModel.Categorias = await _context.Categoria
+                                        .OrderBy(c => c.Nombre)
+                                        .ToListAsync();
+
+            ViewData["SelectedCategoriaId"] = categoriaId;
+
+            return View(viewModel);
+        }
+
+        // === ACCIÓN GEMINI ===
+        public IActionResult Gemini()
+        {
+            return View();
+        }
+
+        public IActionResult ListasCliente()
+        {
+            return View(); // Busca la vista Views/Cliente/ListasCliente.cshtml
+        }
     }
 }

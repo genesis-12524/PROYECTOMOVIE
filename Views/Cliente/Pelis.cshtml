@@ -1,0 +1,236 @@
+@* PASO 1: Definir el modelo que esta vista espera recibir *@
+@model PROYECTOMOVIE.Models.VerPorLista
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            height: 100%; 
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1; 
+        }
+
+        /* --- NUEVA SECCIÓN DE FILTRO DE GÉNERO --- */
+        .genre-filter-section {
+            padding-top: 0; /* <-- Eliminamos el espacio de arriba */
+            padding-bottom: 55px;
+            display: flex;
+            flex-wrap: wrap; /* Para que los botones bajen si no caben */
+            gap: 10px; /* Espacio entre botones */
+            justify-content: center; /* Centra los botones */
+        }
+        
+        .btn-genre {
+            background-color: background-color: var(--accent); /* Color de fondo oscuro */
+            color: #f0f0f0; /* Color de texto claro */
+            border: 1px background-color: #006b96;/* Borde sutil */
+            padding: 8px 16px;
+            border-radius: 20px; /* Bordes redondeados */
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-genre:hover {
+            background-color: #006b96;
+            color: #fff;
+            border-color: #006b96;
+        }
+
+        .btn-genre.active {
+            background-color: #555;
+            color: #fff;
+            border-color: #555;
+            font-weight: 700;
+        }
+
+        /* --- CUADRÍCULA DE PÓSTERS --- */
+        .posters-container {
+            display: grid;
+            gap: 40px; 
+            padding-top: 10px; /* Reducido un poco */
+            grid-template-columns: repeat(3, 1fr); /* Móvil */
+        }
+        
+        .poster-link-wrapper {
+            display: block; 
+            text-decoration: none;
+        }
+
+        .poster-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <!-- ... Tu header ... -->
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis" class="nav-active">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Cliente/ListasCliente">Mis Listas</a>
+        </nav>
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+    <section class="search-block-section">
+            <div class="container">
+                <h2>¿No sabes qué ver?</h2>
+                <form asp-controller="Cliente" asp-action="Buscar" method="get" class="search-block-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" 
+                               name="terminoBusqueda" 
+                               placeholder="Buscar por título..." 
+                               class="search-block-input">
+                        <i class="fa-solid fa-xmark search-clear-icon"></i>
+                    </div>
+                    <div class="search-buttons-container">
+                        <button type="submit" asp-action="Buscar" class="btn-buscar">Buscar</button>
+                        <button type="submit" asp-action="Aleatorio" class="btn-aleatorio" formmethod="get"> Modo Aleatorio</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    <div class="content-area container">
+
+        <!-- ============================================= -->
+        <!-- ===== NUEVA SECCIÓN DE FILTRO DE GÉNEROS ==== -->
+        <!-- ============================================= -->
+        <section class="genre-filter-section">
+            @{
+                // Obtenemos el ID seleccionado (si existe) desde el ViewData
+                var selectedId = ViewData["SelectedCategoriaId"] as int?;
+            }
+
+            <!-- Botón para "Mostrar Todos" -->
+            <!-- Se marca 'active' si no hay ningún ID seleccionado -->
+            <a asp-controller="Cliente"
+               asp-action="Pelis"
+               asp-route-categoriaId=""
+               class="btn-genre @(selectedId == null ? "active" : "")">
+               Todos
+            </a>
+
+            <!-- Bucle para crear un botón por cada categoría -->
+            @if (Model.Categorias != null && Model.Categorias.Any())
+            {
+                @foreach (var categoria in Model.Categorias)
+                {
+                    <!-- El botón redirige a la misma acción 'Pelis' pero pasando el ID -->
+                    <a asp-controller="Cliente"
+                       asp-action="Pelis"
+                       asp-route-categoriaId="@categoria.Id"
+                       class="btn-genre @(selectedId == categoria.Id ? "active" : "")">
+                       @categoria.Nombre
+                    </a>
+                }
+            }
+        </section>
+
+
+        <!-- ============================================= -->
+        <!-- =====   CUADRÍCULA DE PELÍCULAS   ===== -->
+        <!-- ============================================= -->
+        <div class="posters-container">
+            
+            @if (Model.Peliculas != null && Model.Peliculas.Any())
+            {
+                @foreach (var peli in Model.Peliculas)
+                {
+                    <a asp-controller="Cliente"
+                       asp-action="PeliculaDetalle"
+                       asp-route-id="@peli.Id"
+                       class="poster-link-wrapper">
+
+                        <div class="poster-card">
+                            <img src="~/IMG/img-pelis/@peli.ImagenPublicId" alt="@peli.Nombre_Peli">
+                            <div class="poster-info">
+                                <div class="title">@peli.Nombre_Peli</div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <!-- Mensaje si el filtro no devuelve resultados -->
+                <p style="grid-column: 1 / -1; text-align: center; color: var(--muted);">
+                    No se encontraron películas para esta categoría.
+                </p>
+            }
+
+        </div>
+
+    </div>
+</main>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - PROYECTOMOVIE
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputField = document.querySelector('.search-block-input');
+        const clearIcon = document.querySelector('.search-clear-icon');
+
+        if (inputField && clearIcon) {
+            
+            function clearSearchInput() {
+                inputField.value = '';
+                inputField.focus();
+                toggleClearIcon();
+            }
+
+            function toggleClearIcon() {
+                if (inputField.value.length > 0) {
+                    clearIcon.style.display = 'block'; 
+                } else {
+                    clearIcon.style.display = 'none';
+                }
+            }
+            
+            clearIcon.addEventListener('click', clearSearchInput);
+            inputField.addEventListener('input', toggleClearIcon);
+            toggleClearIcon(); 
+        }
+    });
+    </script>
+
+    </body>
+</html>

@@ -1,0 +1,105 @@
+@using PROYECTOMOVIE.Models
+@model Pelicula
+@{
+    ViewData["Title"] = Model.Nombre_Peli; // Título de la pestaña del navegador
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/peliDetalles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Cliente/ListasCliente">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="details-hero">
+
+            <video class="trailer-video-bg" autoplay loop muted playsinline>
+                <source src="@Model.TrailerPublicId" type="video/mp4">
+                Tu navegador no soporta videos HTML5.
+            </video>
+            <div class="video-overlay"></div>
+
+            <button id="mute-toggle-btn" class="video-mute-btn">
+                <i class="fa-solid fa-volume-xmark"></i>
+            </button>
+            <div class="details-content">
+                
+                <div class="details-poster">
+                    <img src="~/IMG/img-pelis/@Model.ImagenPublicId" alt="@Model.Nombre_Peli">
+                </div>
+
+                <div class="details-info">
+                    <h1 class="details-title">@Model.Nombre_Peli</h1>
+                    
+                    <div class="details-meta">
+                        AÑO: @Model.Fecha_Publicada | DURACIÓN: @Model.Tiempo_Duracion | GÉNERO: 
+                    </div>
+                    
+                    <p class="details-description">
+                        @Model.Descripción
+                    </p>
+
+                    <div class="details-actions">
+                        <button><i class="fa-solid fa-play"></i> Suscribirse</button>
+                        <button class="btn-icon-action" aria-label="Añadir a favoritos">
+                            <i class="fa-regular fa-heart"></i>
+                        </button>
+                        
+                        <button class="btn-icon-action" aria-label="Añadir a mi lista">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+             </div>
+    </main>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const video = document.querySelector('.trailer-video-bg');
+            const muteBtn = document.getElementById('mute-toggle-btn');
+
+            if (video && muteBtn) {
+                const icon = muteBtn.querySelector('i');
+                
+                muteBtn.addEventListener('click', function() {
+                    video.muted = !video.muted; // Invierte el estado de silencio
+                    
+                    if (video.muted) {
+                        icon.classList.remove('fa-volume-high');
+                        icon.classList.add('fa-volume-xmark');
+                    } else {
+                        icon.classList.remove('fa-volume-xmark');
+                        icon.classList.add('fa-volume-high');
+                    }
+                });
+            }
+        });
+    </script>
+    </body>

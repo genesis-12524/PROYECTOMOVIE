@@ -178,7 +178,8 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        // Redirigir a la vista de Cliente después del registro
+                        return RedirectToAction("Index", "Cliente");
                     }
                 }
                 foreach (var error in result.Errors)

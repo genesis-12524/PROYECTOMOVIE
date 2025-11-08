@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Historias con IA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #60A5FA;
+            --primary-light: #93C5FD;
+            --primary-dark: #3B82F6;
+            --secondary: #F59E0B;
+            --dark-bg: #0F172A;
+            --card-bg: #1E293B;
+            --card-border: #334155;
+            --text: #E2E8F0;
+            --text-muted: #94A3B8;
+            --white: #FFFFFF;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .story-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            background-color: var(--card-bg);
+        }
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 40px;
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .story-content {
+            white-space: pre-line;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-light);
+            margin-bottom: 1rem;
+        }
+
+        /* Modo Oscuro */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+
+        .card-header {
+            background-color: #2d2d2d !important;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .form-control, .form-select {
+            background-color: #2d2d2d;
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #2d2d2d;
+            border-color: var(--primary);
+            color: var(--text);
+            box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--card-border);
+        }
+
+        .btn-outline-primary, 
+        .btn-outline-success, 
+        .btn-outline-warning {
+            color: var(--text);
+            border-color: var(--primary);
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-success:hover,
+        .btn-outline-warning:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        #emptyState {
+            color: var(--text-muted);
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Estilo para las etiquetas del formulario */
+        .form-label {
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        /* Estilo para el texto dentro de los inputs y selects */
+        .form-control, .form-select {
+            background-color: #2d2d2d;
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        /* Estilo para el placeholder */
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-dark {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        .btn-dark:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .text-primary {
+            color: var(--primary-light) !important;
+        }
+
+        .bg-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+        }
+
+        .bg-success {
+            background: linear-gradient(135deg, #10B981, #059669) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #D97706, #B45309);
+            color: white;
+        }
+
+        .toast {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* Estilos para los cuadros de características */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        @@media (max-width: 768px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .feature h3 {
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        
+        .feature p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón de Salida -->
+    <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
+        <a href="/Cliente/Index" class="btn btn-dark rounded-circle p-2" title="Volver al Inicio">
+            <i class="bi bi-box-arrow-left" style="font-size: 24px;"></i>
+        </a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="bi bi-magic"></i> Creador de Historias con IA
+                    </h1>
+                    <p class="lead mb-4">
+                        Deja que volar tu imaginación y que la IA te ayude a crear historias increíbles. 
+                        Solo proporciona la idea.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Cuadros de características -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎭</div>
+                <h3>Múltiples Géneros</h3>
+                <p>Elige entre una amplia variedad de géneros literarios para tu historia</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">👤</div>
+                <h3>Personajes Únicos</h3>
+                <p>Crea protagonistas memorables con personalidades y motivaciones definidas</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <h3>Narrativa Dinámica</h3>
+                <p>Genera tramas emocionantes con giros inesperados y finales sorprendentes</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Story Creator Form -->
+            <div class="col-lg-6 mb-4">
+                <div class="card story-card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Crear Nueva Historia</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="createStoryForm">
+                            <div class="mb-3">
+                                <label for="genre" class="form-label fw-semibold">Género</label>
+                                <select class="form-select" id="genre" required>
+                                    <option value="">Selecciona un género...</option>
+                                    <option value="fantasía">🧙‍♂️ Fantasía</option>
+                                    <option value="ciencia ficción">🚀 Ciencia Ficción</option>
+                                    <option value="romance">💖 Romance</option>
+                                    <option value="misterio">🕵️‍♂️ Misterio</option>
+                                    <option value="aventura">🗺️ Aventura</option>
+                                    <option value="terror">👻 Terror</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="mainCharacter" class="form-label fw-semibold">Personaje Principal</label>
+                                <input type="text" class="form-control" id="mainCharacter" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="setting" class="form-label fw-semibold">Escenario</label>
+                                <input type="text" class="form-control" id="setting" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="additionalDetails" class="form-label fw-semibold">Detalles Adicionales</label>
+                                <textarea class="form-control" id="additionalDetails" rows="4"></textarea>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="createButton">
+                                    <i class="bi bi-magic"></i> Crear Historia
+                                    <div class="spinner-border spinner-border-sm loading-spinner ms-2"></div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Story Results -->
+            <div class="col-lg-6">
+                <div id="storyResult" style="display: none;">
+                    <div class="card story-card">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0"><i class="bi bi-book"></i> Tu Historia Creada</h4>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title text-primary" id="storyTitle"></h3>
+                            <div class="story-content card-text mb-4" id="storyContent"></div>
+                            
+                            <div class="action-buttons mt-4">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="btn btn-outline-primary" onclick="copyToClipboard()">
+                                        <i class="bi bi-clipboard"></i> Copiar
+                                    </button>
+                                    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#continueModal">
+                                        <i class="bi bi-arrow-right"></i> Continuar
+                                    </button>
+                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#improveModal">
+                                        <i class="bi bi-star"></i> Mejorar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="text-center py-5">
+                    <i class="bi bi-journal-text display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted">Tu historia aparecerá aquí</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="continueModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Continuar Historia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="continuationPrompt" rows="4" 
+                              placeholder="¿Cómo quieres continuar la historia?"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="continueStory()" id="continueButton">
+                        Continuar Historia
+                        <div class="spinner-border spinner-border-sm loading-spinner ms-2"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="improveModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mejorar Historia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select" id="improvementType">
+                        <option value="diálogos">💬 Diálogos</option>
+                        <option value="descripciones">🎨 Descripciones</option>
+                        <option value="estructura">📖 Estructura</option>
+                        <option value="personajes">👥 Personajes</option>
+                        <option value="general">✨ General</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" onclick="improveStory()" id="improveButton">
+                        <i class="bi bi-star"></i> Mejorar
+                        <div class="spinner-border spinner-border-sm loading-spinner ms-2"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStoryId = null;
+
+        document.getElementById('createStoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const createButton = document.getElementById('createButton');
+            const spinner = createButton.querySelector('.loading-spinner');
+            createButton.disabled = true;
+            spinner.style.display = 'inline-block';
+            
+            const request = {
+                genre: document.getElementById('genre').value,
+                mainCharacter: document.getElementById('mainCharacter').value,
+                setting: document.getElementById('setting').value,
+                additionalDetails: document.getElementById('additionalDetails').value
+            };
+            
+            try {
+                const response = await fetch('/api/stories/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(request)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayStory(result.story);
+                    showNotification('¡Historia creada exitosamente!', 'success');
+                } else {
+                    showNotification('Error: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                showNotification('Error de conexión: ' + error.message, 'danger');
+            } finally {
+                createButton.disabled = false;
+                spinner.style.display = 'none';
+            }
+        });
+
+        function displayStory(story) {
+            currentStoryId = story.id;
+            
+            document.getElementById('storyTitle').textContent = story.title;
+            document.getElementById('storyContent').textContent = story.content;
+            
+            document.getElementById('storyResult').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        async function continueStory() {
+            const prompt = document.getElementById('continuationPrompt').value;
+            if (!prompt.trim()) {
+                showNotification('Escribe una indicación para continuar', 'warning');
+                return;
+            }
+
+            const continueButton = document.getElementById('continueButton');
+            const spinner = continueButton.querySelector('.loading-spinner');
+            continueButton.disabled = true;
+            spinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`/api/stories/${currentStoryId}/continue`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayStory(result.story);
+                    document.getElementById('continuationPrompt').value = '';
+                    bootstrap.Modal.getInstance(document.getElementById('continueModal')).hide();
+                    showNotification('¡Historia continuada!', 'success');
+                } else {
+                    showNotification('Error: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                showNotification('Error de conexión: ' + error.message, 'danger');
+            } finally {
+                continueButton.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        async function improveStory() {
+            const improvementType = document.getElementById('improvementType').value;
+
+            const improveButton = document.getElementById('improveButton');
+            const spinner = improveButton.querySelector('.loading-spinner');
+            improveButton.disabled = true;
+            spinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`/api/stories/${currentStoryId}/improve`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ improvementType })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayStory(result.story);
+                    bootstrap.Modal.getInstance(document.getElementById('improveModal')).hide();
+                    showNotification('¡Historia mejorada!', 'success');
+                } else {
+                    showNotification('Error: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                showNotification('Error de conexión: ' + error.message, 'danger');
+            } finally {
+                improveButton.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+
+        function copyToClipboard() {
+            const storyText = `${document.getElementById('storyTitle').textContent}\n\n${document.getElementById('storyContent').textContent}`;
+            navigator.clipboard.writeText(storyText).then(() => {
+                showNotification('Historia copiada al portapapeles', 'info');
+            });
+        }
+
+        function showNotification(message, type) {
+            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-bg-${type} border-0`;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toastContainer';
+            container.className = 'toast-container position-fixed top-0 end-0 p-3';
+            document.body.appendChild(container);
+            return container;
+        }
+    </script>
+</body>
+</html>
