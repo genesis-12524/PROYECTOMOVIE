@@ -49,18 +49,11 @@
         return View();
     }
 
-    // --- 2. AQUÍ ESTÁ LA NUEVA ACCIÓN DE BÚSQUEDA ---
-    public async Task<IActionResult> Buscar(string terminoBusqueda)
-    {
-        // 1. Prepara las consultas base para ambas tablas
-            var peliculasQuery = from peli in _context.Peliculas
-                                    select peli;
-
-        // --- 2. ACCIÓN PELIS (PÁGINA DE PELÍCULAS) ---
-        // Esta es la acción para la página de "Películas" (http://localhost:5162/Home/Pelis)
-        // SÍ LLEVA EL PARÁMETRO (int? categoriaId) para los filtros.
-        // Carga TODAS las películas (o las filtradas).
-        public async Task<IActionResult> Pelis(int? categoriaId)
+    // --- 2. ACCIÓN PELIS (PÁGINA DE PELÍCULAS) ---
+    // Esta es la acción para la página de "Películas" (http://localhost:5162/Home/Pelis)
+    // SÍ LLEVA EL PARÁMETRO (int? categoriaId) para los filtros.
+    // Carga TODAS las películas (o las filtradas).
+    public async Task<IActionResult> Pelis(int? categoriaId)
         {
             var viewModel = new VerPorLista();
 

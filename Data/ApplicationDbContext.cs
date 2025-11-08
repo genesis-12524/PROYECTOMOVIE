@@ -21,7 +21,7 @@ namespace PROYECTOMOVIE.Data
         public DbSet<UsuarioSuscripcion> UsuarioSuscripciones { get; set; }
         public DbSet<UsuarioSerie> UsuarioSeries { get; set; }
         public DbSet<UsuarioPelicula> UsuarioPeliculas { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
@@ -158,28 +158,28 @@ namespace PROYECTOMOVIE.Data
 
             // 6. SEED DATA PARA PLANES (DATOS INICIALES)
             builder.Entity<PlanSubcripcion>().HasData(
-                new PlanSubcripcion 
-                { 
+                new PlanSubcripcion
+                {
                     Id = 1,
-                    Nombre = "Plan Básico", 
+                    Nombre = "Plan Básico",
                     Precio = 14.90m,
                     Descripcion = "Ideal para un espectador - 1 pantalla, calidad HD",
                     CicloFacturacion = 30,
                     Activo = true
                 },
-                new PlanSubcripcion 
-                { 
+                new PlanSubcripcion
+                {
                     Id = 2,
-                    Nombre = "Plan Estándar", 
+                    Nombre = "Plan Estándar",
                     Precio = 24.90m,
-                    Descripcion = "Perfecto para familias - 3 pantallas, Full HD", 
+                    Descripcion = "Perfecto para familias - 3 pantallas, Full HD",
                     CicloFacturacion = 30,
                     Activo = true
                 },
-                new PlanSubcripcion 
-                { 
+                new PlanSubcripcion
+                {
                     Id = 3,
-                    Nombre = "Plan Premium", 
+                    Nombre = "Plan Premium",
                     Precio = 34.90m,
                     Descripcion = "Experiencia cinematográfica - 5 pantallas, calidad 4K",
                     CicloFacturacion = 30,

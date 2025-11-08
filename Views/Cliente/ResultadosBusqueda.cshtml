@@ -1,0 +1,136 @@
+@* PASO 1: Cambiamos el modelo que la vista espera recibir.
+   Ahora espera el ViewModel 'VerPorLista' que contiene ambas listas. *@
+@model PROYECTOMOVIE.Models.VerPorLista
+
+@{
+    ViewData["Title"] = "Resultados de la Búsqueda";
+    
+    // PASO 2: Obtenemos el término de búsqueda DESDE EL MODELO.
+    // (Model.TerminoBusqueda lo rellenamos en el HomeController)
+    var termino = Model.TerminoBusqueda;
+
+    // Variables de ayuda para saber qué listas tienen contenido
+    bool hayPeliculas = Model.Peliculas != null && Model.Peliculas.Any();
+    bool haySeries = Model.Series != null && Model.Series.Any();
+}
+
+<head>
+    @* Tus estilos CSS se mantienen intactos *@
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+
+<body>
+
+    @* Tu cabecera HTML se mantiene intacta *@
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Cliente/ListasCliente">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="content-area container">
+
+            <section class="content-row">
+                
+                @* El título de la sección ahora usa la variable 'termino' que viene del Modelo *@
+                @if (string.IsNullOrEmpty(termino))
+                {
+                    <h2 class="row-title"><span>Mostrando todo</span></h2>
+                }
+                else
+                {
+                    <h2 class="row-title"><span>Resultados para "@termino"</span></h2>
+                }
+
+                @* PASO 3: Revisamos si CUALQUIERA de las dos listas tiene resultados *@
+                @if (hayPeliculas || haySeries)
+                {
+                    // --- INICIO SECCIÓN PELÍCULAS ---
+                    // Solo mostramos esta sección si 'hayPeliculas' es verdadero
+                    @if (hayPeliculas)
+                    {
+                        <h3 class="row-title" style="font-size: 1.5rem; margin-top: 20px;"><span>Películas</span></h3>
+                        
+                        <div class="posters-container">
+                            @* Bucle 1: Iteramos sobre Model.Peliculas *@
+                            @foreach (var peli in Model.Peliculas)
+                            {
+                                <a asp-controller="Cliente"
+                                   asp-action="PeliculaDetalle"
+                                   asp-route-id="@peli.Id"
+                                   class="poster-link-wrapper">
+
+                                <div class="poster-card">
+                                    <img src="~/IMG/img-pelis/@peli.ImagenPublicId" alt="@peli.Nombre_Peli">
+                                    <div class="poster-info">
+                                        @* Corregido para mostrar el nombre, no el ID de la imagen *@
+                                        <div class="title">@peli.Nombre_Peli</div>
+                                    </div>
+                                </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    // --- FIN SECCIÓN PELÍCULAS ---
+
+                    // --- INICIO SECCIÓN SERIES ---
+                    // Solo mostramos esta sección si 'haySeries' es verdadero
+                    @if (haySeries)
+                    {
+                        <h3 class="row-title" style="font-size: 1.5rem; margin-top: 40px;"><span>Series</span></h3>
+
+                        <div class="posters-container">
+                            @* Bucle 2: Iteramos sobre Model.Series usando tu mismo diseño *@
+                            @foreach (var serie in Model.Series)
+                            {
+                                @* ¡IMPORTANTE!
+                                  Esto asume que tienes una acción [SerieDetalle] en tu HomeController.
+                                  Si no la tienes, este enlace dará error.
+                                *@
+                                <a asp-controller="Cliente"
+                                   asp-action="SerieDetalle"
+                                   asp-route-id="@serie.Id"
+                                   class="poster-link-wrapper">
+
+                                <div class="poster-card">
+                                    @* Asumo que la ruta de la imagen es correcta *@
+                                    <img src="~/IMG/img-series/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                                    <div class="poster-info">
+                                        <div class="title">@serie.Nombre_Serie</div>
+                                    </div>
+                                </div>
+                                </a>
+                            }
+                        </div>
+                    }
+                    // --- FIN SECCIÓN SERIES ---
+                }
+                else
+                {
+                    @* Mensaje si AMBAS listas (películas y series) están vacías *@
+                    <p style="color: var(--muted); font-size: 18px;">
+                        No se encontraron resultados para "@termino".
+                    </p>
+                }
+            </section>
+
+        </div>
+    </main>
+</body>
