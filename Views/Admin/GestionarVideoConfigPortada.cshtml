@@ -1,0 +1,119 @@
+@model VideoPortadaViewModel
+
+<link rel="stylesheet" href="~/css/GestionarVideo.css">
+
+<div class="container mt-4">
+    <h2>Gestión Completa de Video Portada</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Video Actual -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Video Actual de Portada</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.TieneVideoConfigurado)
+            {
+                <div class="row">
+                    <div class="col-md-8">
+                        <p><strong>Película seleccionada:</strong> @Model.NombrePelicula</p>
+                        <p><strong>Descripción:</strong> @Model.DescripcionPelicula</p>
+                        <p><strong>Trailer URL:</strong> 
+                            <a href="@Model.TrailerUrl" target="_blank">@Model.TrailerUrl</a>
+                        </p>
+                        <p><strong>Estado:</strong> 
+                            <span class="badge bg-success">Configurado</span>
+                        </p>
+                        <p><strong>ID de Película:</strong> @Model.PeliculaSeleccionadaId</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        @if (!string.IsNullOrEmpty(Model.TrailerUrl))
+                        {
+                            <video width="100%" controls style="max-width: 200px;">
+                                <source src="@Model.TrailerUrl" type="video/mp4">
+                                Tu navegador no soporta el video.
+                            </video>
+                        }
+                        <form asp-action="EliminarvideoPortada" method="post" 
+                              onsubmit="return confirm('¿Estás seguro de eliminar la configuración?');" 
+                              class="mt-2">
+                            <button type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash"></i> Eliminar Configuración
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center">
+                    <p><strong>Película seleccionada:</strong> Ninguna</p>
+                    <p><strong>Estado:</strong> 
+                        <span class="badge bg-warning">No configurado</span>
+                    </p>
+                    <p><strong>Trailer URL:</strong> No disponible</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Seleccionar Video -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h4>Seleccionar Video para Portada</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.PeliculasDisponibles.Any())
+            {
+                <form asp-action="ConfigurarVideoPortada" method="post">
+                    <div class="form-group">
+                        <label for="peliculaId"><strong>Selecciona una película:</strong></label>
+                        <select name="peliculaId" class="form-control" required>
+                            <option value="">-- Seleccionar película --</option>
+                            @foreach (var pelicula in Model.PeliculasDisponibles)
+                            {
+                                <option value="@pelicula.Id">@pelicula.Nombre_Peli - @pelicula.Tiempo_Duracion</option>
+                            }
+                        </select>
+                        <small class="form-text text-muted">
+                            @Model.PeliculasDisponibles.Count películas con trailer disponible
+                        </small>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check"></i> Confirmar Selección
+                        </button>
+                        <a href="@Url.Action("Peliculas", "Admin")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Películas
+                        </a>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <strong>No hay películas con trailer disponible.</strong>
+                    <p>Agrega trailers a las películas primero.</p>
+                    <a href="@Url.Action("Peliculas", "Admin")" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Agregar Película
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Información -->
+    <div class="alert alert-info mt-4">
+        <strong><i class="bi bi-info-circle"></i> Información:</strong> 
+        El video seleccionado aparecerá en la página principal como fondo de portada.
+    </div>
+</div>

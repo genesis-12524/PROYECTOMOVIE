@@ -1,215 +1,250 @@
+@model PROYECTOMOVIE.Models.PerfilVistaUsuario
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Perfil de Administrador</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="wwwroot/css/site.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 50%, #1b263b 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .profile-card {
+            background: #1b263b;
+            border-radius: 12px;
+            border: 1px solid #2a3a52;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            padding: 25px;
+            border-bottom: 1px solid #2a3a52;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #42a5f5, #1565c0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            margin: 0 auto 15px;
+        }
+        .profile-body {
+            padding: 30px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #2a3a52;
+        }
+        .section-title {
+            color: #64b5f6;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #42a5f5;
+        }
+        .form-control {
+            background-color: #1e2a3a;
+            border: 1px solid #2a3a52;
+            color: #ffffff;
+        }
+        .form-control:focus {
+            background-color: #1e2a3a;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25);
+            color: #ffffff;
+        }
+        .form-label {
+            color: #ffffff;
+            font-weight: 500;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #42a5f5, #1565c0);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #42a5f5);
+            transform: translateY(-2px);
+        }
+        .user-info-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #42a5f5;
+        }
+        .info-label {
+            color: #b8d4f8;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            color: #ffffff;
+            font-weight: 500;
+        }
+        .text-danger {
+            color: #f44336 !important;
+        }
+        .alert {
+            border: none;
+            border-radius: 8px;
+        }
+        .validation-summary {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <h3 class="mb-0">Panel <span class="text-primary">Admin</span></h3>
-            <small class="text-muted">Sistema de gestión</small>
-        </div>
-        
-        <nav class="nav flex-column">
-            <a class="nav-link active" href="/Admin/Index">
-                <i class="bi bi-house-door me-2"></i> Inicio
-            </a>
-            <a class="nav-link" href="/Admin/ListarUsuarios">
-                <i class="bi bi-people me-2"></i> Usuarios
-            </a>
-            <a class="nav-link" href="/Admin/Peliculas">
-                <i class="bi bi-film me-2"></i> Películas
-            </a>
-            <a class="nav-link" href="/Admin/Sistema">
-                <i class="bi bi-gear me-2"></i> Sistema
-            </a>
-            <a class="nav-link" href="/Admin/Perfil">
-                <i class="bi bi-person me-2"></i> Perfil
-            </a>
-            <!-- CAMBIO 1: Reemplazar el formulario por botón que abre el modal -->
-            <button type="button" class="nav-link text-danger w-100 text-start bg-transparent border-0 p-0" 
-                    data-bs-toggle="modal" data-bs-target="#logoutModal">
-                <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
-            </button>
-        </nav>
-        
-        <div class="user-info">
-            <p class="mb-1">Administrador</p>
-            <p class="mb-0">Último acceso: Hoy</p>
-        </div>
-    </div>
-
-    <!-- CAMBIO 2: Modal de Confirmación actualizado -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModalLabel">
-                        <i class="bi bi-question-circle text-primary me-2"></i>
-                        Confirmar Cierre de Sesión
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header text-center">
+                <div class="profile-avatar">
+                    <i class="bi bi-person-fill"></i>
                 </div>
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas cerrar sesión?</p>
-                    <p class="text-muted small">Serás redirigido a la página principal.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle me-2"></i>No, Cancelar
-                    </button>
-                    <!-- CAMBIO 3: Botón que ejecuta el logout mediante JavaScript -->
-                    <button type="button" class="btn btn-danger" onclick="confirmLogout()">
-                        <i class="bi bi-box-arrow-right me-2"></i>Sí, Cerrar Sesión
-                    </button>
-                </div>
+                <h3 class="text-white">Perfil de Administrador</h3>
+                <p class="text-muted mb-0">Gestiona tu información personal y seguridad</p>
             </div>
-        </div>
-    </div>
 
-    <!-- CAMBIO 4: Formulario oculto para logout -->
-    <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" 
-          asp-route-returnUrl="~/" method="post" style="display: none;">
-    </form>
+            <div class="profile-body">
+                <!-- Solo mostrar alertas de TempData -->
+                @if (!string.IsNullOrEmpty(TempData["SuccessMessage"] as string))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="mb-4">Panel de Administración</h1>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6 col-lg-3">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="mb-0">150</h4>
-                                    <p class="mb-0">Usuarios</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="bi bi-people fs-1"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="mb-0">320</h4>
-                                    <p class="mb-0">Películas</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="bi bi-film fs-1"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="mb-0">45</h4>
-                                    <p class="mb-0">Nuevos hoy</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="bi bi-plus-circle fs-1"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 col-lg-3">
-                    <div class="card bg-info text-white">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h4 class="mb-0">98%</h4>
-                                    <p class="mb-0">Disponibilidad</p>
-                                </div>
-                                <div class="align-self-center">
-                                    <i class="bi bi-check-circle fs-1"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Bienvenido al Panel de Administración</h5>
-                        </div>
-                        <div class="card-body">
-                            <p>Desde aquí puedes gestionar todos los aspectos de tu aplicación. Utiliza el menú lateral para navegar entre las diferentes secciones:</p>
+                <form asp-action="Perfil" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="row">
+                        <div class="col-lg-4 mb-4">
+                            <h5 class="section-title">Información Actual</h5>
                             
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <i class="bi bi-house-door text-primary me-2"></i>
-                                    <strong>Inicio:</strong> Página principal del panel de administración
-                                </li>
-                                <li class="list-group-item">
-                                    <i class="bi bi-people text-primary me-2"></i>
-                                    <strong>Usuarios:</strong> Gestiona los usuarios del sistema
-                                </li>
-                                <li class="list-group-item">
-                                    <i class="bi bi-film text-primary me-2"></i>
-                                    <strong>Películas:</strong> Administra el catálogo de películas
-                                </li>
-                                <li class="list-group-item">
-                                    <i class="bi bi-gear text-primary me-2"></i>
-                                    <strong>Sistema:</strong> Configuración y ajustes del sistema
-                                </li>
-                                <li class="list-group-item">
-                                    <i class="bi bi-person text-primary me-2"></i>
-                                    <strong>Perfil:</strong> Modifica tu información personal
-                                </li>
-                            </ul>
-                            
-                            <p class="mt-3">Este menú lateral permanecerá fijo en la parte izquierda de la pantalla mientras navegas por las diferentes secciones, proporcionando un acceso rápido a todas las funcionalidades.</p>
+                            <div class="user-info-item">
+                                <div class="info-label">Nombre de Usuario</div>
+                                <div class="info-value">@Model.NombredeUsuario</div>
+                            </div>
+                            <div class="user-info-item">
+                                <div class="info-label">Correo Electrónico</div>
+                                <div class="info-value">@Model.Email</div>
+                            </div>
+                            <div class="user-info-item">
+                                <div class="info-label">Fecha de Registro</div>
+                                <div class="info-value">@Model.FechaRegistro.ToString("dd/MM/yyyy")</div>
+                            </div>
+
+                            <a href="/Admin/Index" class="btn btn-outline-secondary w-100 mt-3">
+                                <i class="bi bi-arrow-left me-2"></i>Volver al Panel
+                            </a>
+                        </div>
+
+                        <div class="col-lg-8">
+                            <div class="form-section">
+                                <h5 class="section-title">Información Personal</h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Nombre" class="form-label">Nombre *</label>
+                                        <input asp-for="Nombre" class="form-control" />
+                                        <span asp-validation-for="Nombre" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Apellido" class="form-label">Apellido *</label>
+                                        <input asp-for="Apellido" class="form-control" />
+                                        <span asp-validation-for="Apellido" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">Correo Electrónico *</label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+
+                                <button type="submit" name="actionType" value="updateProfile" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i>Actualizar Información
+                                </button>
+                            </div>
+
+                            <div class="form-section">
+                                <h5 class="section-title">Cambio de Contraseña</h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="CurrentPassword" class="form-label">Contraseña Actual *</label>
+                                    <input asp-for="CurrentPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="CurrentPassword" class="text-danger small"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="NewPassword" class="form-label">Nueva Contraseña *</label>
+                                    <input asp-for="NewPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="NewPassword" class="text-danger small"></span>
+                                    <div class="form-text text-muted">La contraseña debe tener al menos 6 caracteres.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="ConfirmPassword" class="form-label">Confirmar Nueva Contraseña *</label>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                </div>
+
+                                <button type="submit" name="actionType" value="changePassword" class="btn btn-primary">
+                                    <i class="bi bi-key me-2"></i>Cambiar Contraseña
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- CAMBIO 5: JavaScript para el logout -->
     <script>
-        function confirmLogout() {
-            // Cierra el modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
-            modal.hide();
-            
-            // Envía el formulario de logout después de un pequeño delay
-            setTimeout(() => {
-                document.getElementById('logoutForm').submit();
-            }, 300);
-        }
-    </script>   
+        // Auto-cerrar alertas después de 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Limpiar campos de contraseña automáticamente cuando la página se carga
+        document.addEventListener('DOMContentLoaded', function() {
+            // Limpiar campos de contraseña siempre que la página se cargue
+            const passwordFields = document.querySelectorAll('input[type="password"]');
+            passwordFields.forEach(field => {
+                field.value = '';
+            });
+        });
+    </script>
 </body>
 </html>

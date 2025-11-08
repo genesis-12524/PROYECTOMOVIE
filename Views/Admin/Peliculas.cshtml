@@ -34,13 +34,9 @@
             <a class="nav-link active" href="/Admin/Peliculas">
                 <i class="bi bi-film me-2"></i> Películas
             </a>
-            <a class="nav-link" href="/Admin/Sistema">
-                <i class="bi bi-gear me-2"></i> Sistema
-            </a>
             <a class="nav-link" href="/Admin/Perfil">
                 <i class="bi bi-person me-2"></i> Perfil
             </a>
-            <!-- CAMBIO 1: Reemplazar el formulario por botón que abre el modal -->
             <button type="button" class="nav-link text-danger w-100 text-start bg-transparent border-0 p-0" 
                     data-bs-toggle="modal" data-bs-target="#logoutModal">
                 <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
@@ -53,7 +49,7 @@
         </div>
     </div>
 
-    <!-- CAMBIO 2: Modal de Confirmación actualizado -->
+    <!-- Modal de Confirmación -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -72,7 +68,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-2"></i>No, Cancelar
                     </button>
-                    <!-- CAMBIO 3: Botón que ejecuta el logout mediante JavaScript -->
                     <button type="button" class="btn btn-danger" onclick="confirmLogout()">
                         <i class="bi bi-box-arrow-right me-2"></i>Sí, Cerrar Sesión
                     </button>
@@ -81,13 +76,81 @@
         </div>
     </div>
 
-    <!-- CAMBIO 4: Formulario oculto para logout -->
+    <!-- Formulario oculto para logout -->
     <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" 
           asp-route-returnUrl="~/" method="post" style="display: none;">
     </form>
 
     <!-- Main Content -->
     <div class="main-content">
+        
+        <!-- SECCIÓN GESTIÓN DE VIDEO PORTADA -->
+        <div class="hero-section-management fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0 text-white">
+                    <i class="bi bi-play-btn-fill me-2"></i>Gestión de Video Portada
+                </h3>
+                <a href="/Admin/GestionarVideoConfigPortada" class="btn btn-light">
+                    <i class="bi bi-gear me-1"></i> Gestionar Completo
+                </a>
+            </div>
+
+            <!-- Estado Actual del Video Portada -->
+            <div class="hero-preview-card">
+                <h5 class="text-white mb-3">
+                    <i class="bi bi-info-circle me-2"></i>Video Actual de Portada
+                </h5>
+                
+                <div id="heroCurrentStatus">
+                    <div class="status-loading">
+                        <div class="spinner-border text-light" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2 mb-0">Cargando configuración...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración Rápida -->
+            <div class="hero-preview-card">
+                <h5 class="text-white mb-3">
+                    <i class="bi bi-lightning me-2"></i>Configuración Rápida
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <form id="quickHeroConfigForm">
+                            <div class="mb-3">
+                                <label for="quickPeliculaSelect" class="form-label text-white">
+                                    <strong>Seleccionar Película para Portada:</strong>
+                                </label>
+                                <select class="form-select" id="quickPeliculaSelect" required>
+                                    <option value="">-- Seleccionar película --</option>
+                                </select>
+                                <small class="form-text text-white-50">
+                                    Solo películas con trailer disponible
+                                </small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check-lg me-1"></i> Aplicar
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarVideoPortada()">
+                                    <i class="bi bi-trash me-1"></i> Quitar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="text-white-50 small">
+                            <i class="bi bi-info-circle me-1"></i>
+                            El video aparecerá en la página principal como fondo de portada.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Lista de películas -->
         <div class="movies-list fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -111,7 +174,6 @@
                             <th width="80">Imagen</th>
                             <th width="150">Nombre</th>
                             <th width="200">Descripción</th>
-                            <th width="120">Género</th>
                             <th width="100">Duración</th>
                             <th width="120">Fecha</th>
                             <th width="100">Película</th>
@@ -120,9 +182,8 @@
                         </tr>
                     </thead>
                     <tbody id="peliculasList">
-                        <!-- Las películas se cargarán aquí -->
                         <tr>
-                            <td colspan="10" class="text-center py-4">
+                            <td colspan="9" class="text-center py-4">
                                 <p class="text-muted mb-0">Cargando películas...</p>
                             </td>
                         </tr>
@@ -257,14 +318,198 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Función para mostrar películas en la tabla (FUNCIÓN FALTANTE AGREGADA)
+        // ========== FUNCIONES PARA VIDEO PORTADA ==========
+
+        // Cargar estado actual del Video Portada
+        async function cargarEstadoVideoPortada() {
+            try {
+                const response = await fetch('/Admin/GetVideoPortadaStatus');
+                if (response.ok) {
+                    const data = await response.json();
+                    actualizarVistaVideoPortada(data);
+                } else {
+                    // Si no existe el endpoint API, cargar desde la vista
+                    await cargarEstadoDesdeVista();
+                }
+            } catch (error) {
+                console.error('Error cargando video portada:', error);
+                await cargarEstadoDesdeVista();
+            }
+        }
+
+        // Cargar estado desde la vista HTML (método alternativo)
+        async function cargarEstadoDesdeVista() {
+            try {
+                const response = await fetch('/Admin/GestionarVideoConfigPortada');
+                if (response.ok) {
+                    const text = await response.text();
+                    
+                    // Buscar información en el HTML
+                    const tieneConfigurado = text.includes('Configurado');
+                    const nombrePelicula = extraerTexto(text, 'Película seleccionada:', '</p>') || 'No configurado';
+                    const descripcion = extraerTexto(text, 'Descripción:', '</p>') || 'Sin descripción';
+                    const trailerUrl = extraerTexto(text, 'Trailer URL:', '</p>') || '';
+                    
+                    actualizarVistaVideoPortada({
+                        tieneConfigurado: tieneConfigurado,
+                        nombrePelicula: nombrePelicula,
+                        descripcion: descripcion,
+                        trailerUrl: trailerUrl
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando desde vista:', error);
+                mostrarErrorHero('Error al cargar la configuración');
+            }
+        }
+
+        // Función auxiliar para extraer texto
+        function extraerTexto(html, inicio, fin) {
+            const startIndex = html.indexOf(inicio);
+            if (startIndex === -1) return null;
+            const endIndex = html.indexOf(fin, startIndex);
+            if (endIndex === -1) return null;
+            let texto = html.substring(startIndex + inicio.length, endIndex).trim();
+            texto = texto.replace(/<[^>]*>/g, '');
+            return texto;
+        }
+
+        // Actualizar la vista del Video Portada
+        function actualizarVistaVideoPortada(data) {
+            const container = document.getElementById('heroCurrentStatus');
+            
+            if (data.tieneConfigurado) {
+                container.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <p class="mb-1"><strong>Película seleccionada:</strong> ${data.nombrePelicula}</p>
+                            <p class="mb-1"><strong>Descripción:</strong> ${data.descripcion}</p>
+                            <p class="mb-2"><strong>Estado:</strong> 
+                                <span class="badge bg-success config-badge">Configurado</span>
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            ${data.trailerUrl && data.trailerUrl !== 'No disponible' ? `
+                                <video class="video-preview" controls>
+                                    <source src="${data.trailerUrl}" type="video/mp4">
+                                    Tu navegador no soporta el video.
+                                </video>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-2">
+                        <p class="mb-2"><strong>Película seleccionada:</strong> Ninguna</p>
+                        <p class="mb-2"><strong>Estado:</strong> 
+                            <span class="badge bg-warning config-badge">No configurado</span>
+                        </p>
+                        <p class="mb-0 text-white-50">Selecciona una película para configurar el Video de Portada</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Mostrar error en el hero section
+        function mostrarErrorHero(mensaje) {
+            document.getElementById('heroCurrentStatus').innerHTML = `
+                <div class="alert alert-warning">
+                    ${mensaje}
+                </div>
+            `;
+        }
+
+        // Cargar películas para el selector rápido
+        async function cargarPeliculasParaPortada() {
+            try {
+                const response = await fetch('/api/peliculas/todas-peliculas');
+                if (response.ok) {
+                    const peliculas = await response.json();
+                    const select = document.getElementById('quickPeliculaSelect');
+                    
+                    const peliculasConTrailer = peliculas.filter(p => p.video_Trailer && p.video_Trailer !== '');
+                    
+                    select.innerHTML = '<option value="">-- Seleccionar película --</option>' +
+                        peliculasConTrailer.map(p => 
+                            `<option value="${p.id}">${p.nombre_Peli} - ${p.tiempo_Duracion}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error cargando películas para portada:', error);
+            }
+        }
+
+        // Configurar Video Portada rápidamente
+        document.getElementById('quickHeroConfigForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const peliculaId = document.getElementById('quickPeliculaSelect').value;
+            if (!peliculaId) {
+                alert('Por favor selecciona una película');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('peliculaId', peliculaId);
+
+                const response = await fetch('/Admin/ConfigurarVideoPortada', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Video de Portada configurado correctamente');
+                    // Recargar la página para ver los cambios
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert('Error al configurar el Video de Portada');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        });
+
+        // Eliminar configuración del Video Portada
+        async function eliminarVideoPortada() {
+            if (!confirm('¿Estás seguro de que quieres eliminar la configuración del Video de Portada?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Admin/EliminarvideoPortada', {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert('Video de Portada eliminado correctamente');
+                    // Recargar la página para ver los cambios
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alert('Error al eliminar el Video de Portada');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+            }
+        }
+
+        // ========== FUNCIONES PARA PELÍCULAS ==========
+
+        // Función para mostrar películas en la tabla
         function mostrarPeliculas(peliculas) {
             const container = document.getElementById('peliculasList');
             
             if (!peliculas || peliculas.length === 0) {
                 container.innerHTML = `
                     <tr>
-                        <td colspan="10" class="text-center py-4">
+                        <td colspan="9" class="text-center py-4">
                             <p class="text-muted mb-0">No hay películas registradas. Haz clic en "Agregar Película" para comenzar.</p>
                         </td>
                     </tr>
@@ -276,16 +521,18 @@
                 <tr>
                     <td class="fw-bold">${pelicula.id}</td>
                     <td>
-                        <img src="${pelicula.imagen_Peli}" 
-                             alt="${pelicula.nombre_Peli}" 
-                             class="img-thumbnail" 
-                             style="width: 60px; height: 80px; object-fit: cover; cursor: pointer;"
-                             onclick="ampliarImagen('${pelicula.imagen_Peli}')">
+                        ${pelicula.imagen_Peli ? `
+                            <img src="${pelicula.imagen_Peli}" 
+                                 alt="${pelicula.nombre_Peli}" 
+                                 class="img-thumbnail" 
+                                 style="width: 60px; height: 80px; object-fit: cover; cursor: pointer;"
+                                 onclick="ampliarImagen('${pelicula.imagen_Peli}')">
+                        ` : '<span class="text-muted">Sin imagen</span>'}
                     </td>
-                    <td class="fw-semibold">${pelicula.nombre_Peli}</td>
+                    <td class="fw-semibold">${pelicula.nombre_Peli || 'Sin nombre'}</td>
                     <td class="small">${pelicula.descripción || 'Sin descripción'}</td>
-                    <td>${pelicula.tiempo_Duracion}</td>
-                    <td>${new Date(pelicula.fecha_Publicada).toLocaleDateString()}</td>
+                    <td>${pelicula.tiempo_Duracion || 'N/A'}</td>
+                    <td>${pelicula.fecha_Publicada ? new Date(pelicula.fecha_Publicada).toLocaleDateString() : 'N/A'}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary" onclick="verPelicula(${pelicula.id})">
                             <i class="bi bi-play-fill"></i> Ver
@@ -318,7 +565,7 @@
             });
         }
 
-        // Función para ver trailer (FUNCIÓN FALTANTE AGREGADA)
+        // Función para ver trailer
         async function verTrailer(id) {
             try {
                 const response = await fetch(`/api/peliculas/${id}`);
@@ -385,7 +632,8 @@
                         modal.hide();
                     }, 1500);
                     
-                    cargarPeliculas(); // Recargar la lista
+                    cargarPeliculas();
+                    cargarPeliculasParaPortada();
                 } else {
                     const error = await response.text();
                     mostrarError('Error: ' + error);
@@ -407,7 +655,6 @@
             alert.textContent = mensaje;
             alert.classList.remove('d-none');
             
-            // Ocultar alerta después de 5 segundos
             setTimeout(() => {
                 alert.classList.add('d-none');
             }, 5000);
@@ -497,19 +744,25 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <img src="${pelicula.imagen_Peli}" class="img-fluid rounded" alt="${pelicula.nombre_Peli}">
+                                                ${pelicula.imagen_Peli ? `
+                                                    <img src="${pelicula.imagen_Peli}" class="img-fluid rounded" alt="${pelicula.nombre_Peli}">
+                                                ` : '<p class="text-muted">Sin imagen</p>'}
                                             </div>
                                             <div class="col-md-8">
-                                                <p><strong>Descripción:</strong> ${pelicula.descripción}</p>
-                                                <p><strong>Duración:</strong> ${pelicula.tiempo_Duracion}</p>
-                                                <p><strong>Fecha de publicación:</strong> ${new Date(pelicula.fecha_Publicada).toLocaleDateString()}</p>
+                                                <p><strong>Descripción:</strong> ${pelicula.descripción || 'Sin descripción'}</p>
+                                                <p><strong>Duración:</strong> ${pelicula.tiempo_Duracion || 'N/A'}</p>
+                                                <p><strong>Fecha de publicación:</strong> ${pelicula.fecha_Publicada ? new Date(pelicula.fecha_Publicada).toLocaleDateString() : 'N/A'}</p>
                                                 <div class="mt-3">
-                                                    <a href="${pelicula.enlace_Peli}" target="_blank" class="btn btn-primary me-2">
-                                                        <i class="bi bi-play-fill me-1"></i> Ver Película
-                                                    </a>
-                                                    <a href="${pelicula.video_Trailer}" target="_blank" class="btn btn-outline-warning">
-                                                        <i class="bi bi-play-btn me-1"></i> Ver Trailer
-                                                    </a>
+                                                    ${pelicula.enlace_Peli ? `
+                                                        <a href="${pelicula.enlace_Peli}" target="_blank" class="btn btn-primary me-2">
+                                                            <i class="bi bi-play-fill me-1"></i> Ver Película
+                                                        </a>
+                                                    ` : ''}
+                                                    ${pelicula.video_Trailer ? `
+                                                        <a href="${pelicula.video_Trailer}" target="_blank" class="btn btn-outline-warning">
+                                                            <i class="bi bi-play-btn me-1"></i> Ver Trailer
+                                                        </a>
+                                                    ` : ''}
                                                 </div>
                                             </div>
                                         </div>
@@ -549,7 +802,8 @@
 
                 if (response.ok) {
                     mostrarExito('Película eliminada exitosamente');
-                    cargarPeliculas(); // Recargar lista
+                    cargarPeliculas();
+                    cargarPeliculasParaPortada();
                 } else {
                     const error = await response.text();
                     mostrarError('Error al eliminar: ' + error);
@@ -560,9 +814,11 @@
             }
         }
 
-        // Cargar películas al cargar la página
+        // Cargar todo al inicializar la página
         document.addEventListener('DOMContentLoaded', function() {
             cargarPeliculas();
+            cargarEstadoVideoPortada();
+            cargarPeliculasParaPortada();
             
             // Establecer fecha actual por defecto
             const today = new Date().toISOString().split('T')[0];
@@ -592,19 +848,15 @@
             });
         });
 
-        //CAMBIO 5: JavaScript para el logout -->
-    
+        // JavaScript para el logout
         function confirmLogout() {
-            // Cierra el modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('logoutModal'));
             modal.hide();
             
-            // Envía el formulario de logout después de un pequeño delay
             setTimeout(() => {
                 document.getElementById('logoutForm').submit();
             }, 300);
         }
-
     </script>
 </body>
 </html>
