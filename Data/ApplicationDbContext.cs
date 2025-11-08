@@ -13,6 +13,8 @@ namespace PROYECTOMOVIE.Data
         }
 
         // DbSets
+        // Le dice a Entity Framework que "Categoria" es una tabla en tu base de datos.
+        public DbSet<Categoria> Categoria { get; set; }
         public DbSet<Pelicula> Peliculas { get; set; }
         public DbSet<Serie> Series { get; set; }
         public DbSet<PlanSubcripcion> PlanSubcripciones { get; set; }
@@ -61,11 +63,14 @@ namespace PROYECTOMOVIE.Data
                 entity.Property(p => p.Nombre_Peli).IsRequired().HasMaxLength(200);
                 entity.Property(p => p.Imagen_Peli).IsRequired();
                 entity.Property(p => p.Descripción).IsRequired();
-                entity.Property(p => p.Genero).IsRequired().HasMaxLength(100);
                 entity.Property(p => p.Enlace_Peli).IsRequired();
                 entity.Property(p => p.Video_Trailer).IsRequired();
                 entity.Property(p => p.Tiempo_Duracion).IsRequired();
                 entity.Property(p => p.Fecha_Publicada).IsRequired();
+
+                entity.HasMany(p => p.Categorias)
+                .WithMany(c => c.Peliculas)
+                .UsingEntity("CategoriaPelicula"); // Nombre de la tabla intermedia
             });
 
             // 2. CAMBIAR NOMBRE DE TABLA DE USUARIOS

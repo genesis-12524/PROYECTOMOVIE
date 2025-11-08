@@ -21,7 +21,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     Imagen_Serie = table.Column<string>(type: "TEXT", nullable: false),
                     ImagenPublicId = table.Column<string>(type: "TEXT", nullable: true),
                     Descripción = table.Column<string>(type: "TEXT", nullable: false),
-                    Genero = table.Column<string>(type: "TEXT", nullable: false),
                     Enlace_Serie = table.Column<string>(type: "TEXT", nullable: false),
                     SeriePublicId = table.Column<string>(type: "TEXT", nullable: true),
                     Video_Trailer = table.Column<string>(type: "TEXT", nullable: false),

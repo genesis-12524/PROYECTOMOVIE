@@ -20,9 +20,6 @@ namespace PROYECTOMOVIE.Models
         public string? Descripción { get; set; }
 
         [Required]
-        public string? Genero { get; set; }
-
-        [Required]
         [Url]
         public string? Enlace_Peli { get; set; }
 

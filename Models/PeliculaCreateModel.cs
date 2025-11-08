@@ -19,9 +19,6 @@ namespace PROYECTOMOVIE.Models
         public string? Descripción { get; set; }
 
         [Required]
-        public string? Genero { get; set; }
-
-        [Required]
         public IFormFile? PeliculaFile { get; set; } // Para subir el video de la película completa
 
         [Required]

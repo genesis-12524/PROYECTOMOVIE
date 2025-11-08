@@ -251,11 +251,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                     b.Property<DateTime>("Fecha_Publicada")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Genero")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ImagenPublicId")
                         .HasColumnType("TEXT");
 
@@ -360,10 +355,6 @@ namespace PROYECTOMOVIE.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Fecha_Publicada")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Genero")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagenPublicId")
