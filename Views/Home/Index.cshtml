@@ -53,7 +53,7 @@
                             loop 
                             playsinline>
                             
-                            <source src="~/Video/avatar-3-trailer.mp4 " type="video/mp4">
+                            <source src="~/Videos/avatar-3-trailer.mp4 " type="video/mp4">
                             Tu navegador no soporta el tag de video.
                         </video>
                     </div>
@@ -182,7 +182,7 @@
 
                             @* Esto ahora es un DIV, no un <a> *@
                             <div class="poster-card">
-                                <img src="~/IMG/img-pelis/@pelicula.ImagenPublicId" alt="@pelicula.Nombre_Peli">
+                                <img src="@pelicula.Imagen_Peli" alt="@pelicula.Nombre_Peli">
                                 <div class="poster-info">
                                     <div class="title">@pelicula.Nombre_Peli</div>
                                 </div>
@@ -221,7 +221,7 @@
                            class="poster-link-wrapper">
                         
                             <div class="poster-card">
-                                <img src="~/IMG/img-pelis/@serie.ImagenPublicId" alt="@serie.Nombre_Serie">
+                                <img src="~/IMG/img-pelis/@serie.Imagen_Serie" alt="@serie.Nombre_Serie">
                                 <div class="poster-info">
                                     <div class="title">@serie.Nombre_Serie</div>
                                 </div>

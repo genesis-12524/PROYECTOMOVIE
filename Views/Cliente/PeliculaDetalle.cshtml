@@ -36,7 +36,7 @@
         <div class="details-hero">
 
             <video class="trailer-video-bg" autoplay loop muted playsinline>
-                <source src="@Model.TrailerPublicId" type="video/mp4">
+                <source src="@Model.Video_Trailer" type="video/mp4">
                 Tu navegador no soporta videos HTML5.
             </video>
             <div class="video-overlay"></div>
@@ -47,7 +47,7 @@
             <div class="details-content">
                 
                 <div class="details-poster">
-                    <img src="~/IMG/img-pelis/@Model.ImagenPublicId" alt="@Model.Nombre_Peli">
+                    <img src="@Model.Imagen_Peli" alt="@Model.Nombre_Peli">
                 </div>
 
                 <div class="details-info">
@@ -62,7 +62,7 @@
                     </p>
 
                     <div class="details-actions">
-                        <button><i class="fa-solid fa-play"></i> Suscribirse</button>
+                        
                         <button class="btn-icon-action" aria-label="Añadir a favoritos">
                             <i class="fa-regular fa-heart"></i>
                         </button>
@@ -83,7 +83,7 @@
             
             <video id="movie-player" controls preload="metadata" style="width: 100%; max-width: 1200px; margin: 0 auto; display: block; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                 
-                <source src="@Model.PeliculaPublicId" type="video/mp4">
+                <source src="@Model.Enlace_Peli" type="video/mp4">
 
                 Tu navegador no soporta la reproducción de video.
             </video>
