@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: mi-app-dotnet
+    env: docker
+    region: oregon
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
