@@ -1,5 +1,4 @@
 ﻿@page
-
 @model RegisterModel
 @{
     ViewData["Title"] = "Registro";
@@ -7,28 +6,34 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="~/css/registro.css" asp-append-version="true">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 
 <h1>@ViewData["Title"]</h1>
 
+
 <div class="row">
-
-    <div class="col-md-4">
-
+    <div class="col-md-8">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Crear nueva Cuenta </h2>
+            <h2>Crear nueva Cuenta</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Nombre" class="form-control" autocomplete="given-name" aria-required="true" placeholder="Nombre" />
-                <label asp-for="Input.Nombre">Nombre</label>
-                <span asp-validation-for="Input.Nombre" class="text-danger"></span>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Apellido" class="form-control" autocomplete="given-Apellido" aria-required="true" placeholder="Apellido" />
-                <label asp-for="Input.Apellido">Apellido</label>
-                <span asp-validation-for="Input.Apellido" class="text-danger"></span>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Nombre" class="form-control" autocomplete="given-name" aria-required="true" placeholder="Nombre" />
+                        <label asp-for="Input.Nombre">Nombre</label>
+                        <span asp-validation-for="Input.Nombre" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Apellido" class="form-control" autocomplete="given-Apellido" aria-required="true" placeholder="Apellido" />
+                        <label asp-for="Input.Apellido">Apellido</label>
+                        <span asp-validation-for="Input.Apellido" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="form-floating mb-3">
@@ -49,15 +54,197 @@
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
 
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
-        
-        </form>
-    
-    </div>
+            <!-- SECCIÓN DE PLANES DE SUSCRIPCIÓN -->
+            <div class="form-group mb-4">
+                <label class="form-label fw-bold fs-5">Selecciona tu Plan de Suscripción</label>
+                <div class="row">
+                    @if (Model.Input?.Planes != null && Model.Input.Planes.Any())
+                    {
+                        @foreach (var plan in Model.Input.Planes)
+                        {
+                            <div class="col-md-6 mb-3">
+                                <div class="card plan-card @(Model.Input.PlanId == plan.Id ? "border-primary shadow selected-plan" : "border-light")" 
+                                     style="cursor: pointer; transition: all 0.3s ease;" 
+                                     onclick="selectPlan(@plan.Id)">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title text-primary fw-bold">@plan.Nombre</h5>
+                                        <p class="card-text text-muted small">@plan.Descripcion</p>
+                                        <h4 class="text-success fw-bold">S/ @plan.Precio</h4>
+                                        <small class="text-muted">Duración: @plan.DuracionDias días</small>
+                                        <div class="mt-2">
+                                            <span class="badge bg-success">Activo</span>
+                                        </div>
+                                        <input type="radio" asp-for="Input.PlanId" value="@plan.Id" style="display: none;" />
+                                        
+                                        <!-- ✅ BOTÓN SIMPLIFICADO - SIN SCRIPT PESADO -->
+                                        <div class="mt-3" id="paymentButton-@plan.Id" style="display: none;">
+                                            @if (plan.Nombre == "Básico")
+                                            {
+                                                <a href="https://www.mercadopago.com.pe/subscriptions/checkout?preapproval_plan_id=b8c80fe330ab4dcb8ab6bf29596c8e05" 
+                                                   class="mercado-pago-button" 
+                                                   onclick="handleMercadoPagoClick(this, 'Básico')"
+                                                   target="_blank">
+                                                    <i class="fas fa-credit-card"></i>Suscribirme al Plan Básico
+                                                </a>
+                                            }
+                                            else if (plan.Nombre == "Premium")
+                                            {
+                                                <a href="https://www.mercadopago.com.pe/subscriptions/checkout?preapproval_plan_id=6f044d2acc954b0798c8440c384945df" 
+                                                   class="mercado-pago-button" 
+                                                   onclick="handleMercadoPagoClick(this, 'Premium')"
+                                                   target="_blank">
+                                                    <i class="fas fa-crown"></i>Suscribirme al Plan Premium
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay planes disponibles en este momento.
+                            </div>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="Input.PlanId" class="text-danger"></span>
+            </div>
 
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary mb-3">
+                <i class="fas fa-user-plus me-2"></i>Registrarse y Suscribirse
+            </button>
+
+            <div class="mt-3 text-center">
+                <small class="text-muted">
+                    Al registrarte, aceptas nuestros 
+                    <a href="/Home/Terminos" class="text-decoration-none">Términos de Servicio</a> 
+                    y 
+                    <a href="/Home/Privacidad" class="text-decoration-none">Política de Privacidad</a>
+                </small>
+            </div>
+
+            <div class="text-center">
+                <p><a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">¿Ya tienes una cuenta? Inicia sesión</a></p>
+            </div>
+        </form>
+    </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // ✅ FUNCIÓN PARA SELECCIONAR PLAN
+        function selectPlan(planId) {
+            // Ocultar todos los botones de pago
+            document.querySelectorAll('[id^="paymentButton-"]').forEach(btn => {
+                btn.style.display = 'none';
+            });
+            
+            // Quitar selección de todas las tarjetas
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('border-primary', 'shadow', 'selected-plan');
+                card.classList.add('border-light');
+            });
+            
+            // Seleccionar la tarjeta actual
+            const radio = document.querySelector(`input[type="radio"][value="${planId}"]`);
+            if (radio) {
+                radio.checked = true;
+                const selectedCard = radio.closest('.plan-card');
+                selectedCard.classList.remove('border-light');
+                selectedCard.classList.add('border-primary', 'shadow', 'selected-plan');
+                
+                // Mostrar botón de pago del plan seleccionado
+                const paymentBtn = document.getElementById(`paymentButton-${planId}`);
+                if (paymentBtn) {
+                    paymentBtn.style.display = 'block';
+                }
+            }
+        }
+
+        // ✅ FUNCIÓN PARA MANEJAR CLIC EN MERCADO PAGO
+        function handleMercadoPagoClick(button, planName) {
+            console.log(`🔄 Iniciando pago para plan: ${planName}`);
+            
+            // Mostrar estado de loading
+            button.classList.add('loading');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirigiendo...';
+            
+            // Verificar que el formulario esté completo
+            const form = document.getElementById('registerForm');
+            const requiredFields = form.querySelectorAll('[required]');
+            let formValid = true;
+            
+            for (let field of requiredFields) {
+                if (!field.value.trim()) {
+                    formValid = false;
+                    break;
+                }
+            }
+            
+            if (!formValid) {
+                alert('⚠️ Por favor, completa todos los datos del formulario antes de proceder al pago.');
+                button.classList.remove('loading');
+                button.innerHTML = originalText;
+                return false;
+            }
+            
+            // Continuar con la redirección después de un breve delay
+            setTimeout(() => {
+                console.log(`✅ Redirigiendo a MercadoPago para: ${planName}`);
+                // La redirección ocurre naturalmente por el href del enlace
+            }, 500);
+            
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstPlanCard = document.querySelector('.plan-card');
+            if (firstPlanCard) {
+                const firstPlanId = firstPlanCard.querySelector('input[type="radio"]').value;
+                selectPlan(firstPlanId);
+            }
+
+            // ✅ CARGAR SCRIPT DE MERCADO PAGO EN SEGUNDO PLANO (NO BLOQUEANTE)
+            setTimeout(() => {
+                loadMercadoPagoScript();
+            }, 2000); // Cargar después de 2 segundos
+        });
+
+        // ✅ FUNCIÓN PARA CARGAR EL SCRIPT SIN BLOQUEAR
+        function loadMercadoPagoScript() {
+            if (!window.$MPC_loaded) {
+                console.log('🔄 Cargando script de MercadoPago en segundo plano...');
+                var script = document.createElement('script');
+                script.src = 'https://secure.mlstatic.com/mptools/render.js';
+                script.async = true;
+                script.onload = function() {
+                    console.log('✅ Script de MercadoPago cargado');
+                    window.$MPC_loaded = true;
+                };
+                document.head.appendChild(script);
+            }
+        }
+
+        // ✅ VALIDACIÓN DEL FORMULARIO PRINCIPAL
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const selectedPlan = document.querySelector('input[name="Input.PlanId"]:checked');
+            if (!selectedPlan) {
+                e.preventDefault();
+                alert('Por favor, selecciona un plan de suscripción.');
+                return false;
+            }
+            
+            console.log('Formulario enviado - Plan seleccionado:', selectedPlan.value);
+        });
+    </script>
 }

@@ -17,8 +17,9 @@ namespace PROYECTOMOVIE.Data
         public DbSet<Categoria> Categoria { get; set; }
         public DbSet<Pelicula> Peliculas { get; set; }
         public DbSet<Serie> Series { get; set; }
-        public DbSet<PlanSubcripcion> PlanSubcripciones { get; set; }
-        public DbSet<UsuarioSuscripcion> UsuarioSuscripciones { get; set; }
+
+        public DbSet<Plan> Planes { get; set; }
+        public DbSet<Subscripcion> Subscripciones { get; set; }
         public DbSet<UsuarioSerie> UsuarioSeries { get; set; }
         public DbSet<UsuarioPelicula> UsuarioPeliculas { get; set; }
 
@@ -38,7 +39,9 @@ namespace PROYECTOMOVIE.Data
             builder.Entity<UsuarioPelicula>()
             .HasKey(up => new { up.UsuarioId, up.PeliculaId });
 
-// 2. CONFIGURACIÓN DEL SEEDING para Categorias (Para que los datos se queden)
+
+
+            // 2. CONFIGURACIÓN DEL SEEDING para Categorias (Para que los datos se queden)
             builder.Entity<Categoria>().HasData(
                 new Categoria { Id = 1, Nombre = "Acción" },
                 new Categoria { Id = 2, Nombre = "Comedia" },
@@ -60,6 +63,22 @@ namespace PROYECTOMOVIE.Data
                 .WithMany(c => c.Series);
 
             base.OnModelCreating(builder);
+            
+            // CONFIGURACIÓN DE RELACIONES para Subscripcion
+            builder.Entity<Subscripcion>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                
+                entity.HasOne(s => s.User)
+                    .WithMany(u => u.Subscripciones)
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(s => s.Plan)
+                    .WithMany()
+                    .HasForeignKey(s => s.PlanId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
             // 1. CONFIGURACIÓN DE PELICULA
             builder.Entity<Pelicula>(entity =>
@@ -118,39 +137,6 @@ namespace PROYECTOMOVIE.Data
             );
              
 
-            // 4. CONFIGURACIÓN SUSCRIPCIONES 
-
-            // Relación Usuario - UsuarioSuscripcion (1:1)
-            builder.Entity<Usuario>()
-                .HasOne(u => u.Subcripcion)
-                .WithOne(us => us.Usuario)
-                .HasForeignKey<UsuarioSuscripcion>(us => us.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Relación PlanSubcripcion - UsuarioSuscripcion (1:N)
-            builder.Entity<PlanSubcripcion>()
-                .HasMany(p => p.UsuarioSuscripcion)
-                .WithOne(us => us.Plan)
-                .HasForeignKey(us => us.PlanId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Configurar PlanSubcripcion
-            builder.Entity<PlanSubcripcion>(entity =>
-            {
-                entity.HasKey(p => p.Id);
-                entity.Property(p => p.Nombre).IsRequired().HasMaxLength(100);
-                entity.Property(p => p.Precio).HasColumnType("decimal(10,2)");
-                entity.Property(p => p.Descripcion).HasMaxLength(500);
-            });
-
-            // Configurar UsuarioSuscripcion
-            builder.Entity<UsuarioSuscripcion>(entity =>
-            {
-                entity.HasKey(us => us.Id);
-                entity.Property(us => us.MercadoPagoSubscriptionId).HasMaxLength(100);
-                entity.Property(us => us.MercadoPagoPayerId).HasMaxLength(100);
-                entity.Property(us => us.MercadoPagoCardId).HasMaxLength(100);
-            });
 
             // ========================================
             // CONFIGURACIÓN DE LISTAS PERSONALIZADAS (NUEVO)
@@ -184,45 +170,29 @@ namespace PROYECTOMOVIE.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // 5. ÍNDICES PARA MEJOR PERFORMANCE
-            builder.Entity<UsuarioSuscripcion>()
-                .HasIndex(us => us.UserId)
-                .IsUnique(); // Para relación 1:1
-
-            builder.Entity<UsuarioSuscripcion>()
-                .HasIndex(us => new { us.Status, us.NextBillingDate });
-
-
-            // 6. SEED DATA PARA PLANES (DATOS INICIALES)
-            builder.Entity<PlanSubcripcion>().HasData(
-                new PlanSubcripcion
+            builder.Entity<Plan>().HasData(
+                new Plan
                 {
                     Id = 1,
-                    Nombre = "Plan Básico",
-                    Precio = 14.90m,
-                    Descripcion = "Ideal para un espectador - 1 pantalla, calidad HD",
-                    CicloFacturacion = 30,
+                    Nombre = "Básico", 
+                    Descripcion = "1 pantalla - Calidad HD", 
+                    Precio = 19.90m, 
+                    MercadoPagoPlanId = "b8c80fe330ab4dcb8ab6bf29596c8e05",
+                    DuracionDias = 30,
                     Activo = true
                 },
-                new PlanSubcripcion
+                new Plan
                 {
                     Id = 2,
-                    Nombre = "Plan Estándar",
-                    Precio = 24.90m,
-                    Descripcion = "Perfecto para familias - 3 pantallas, Full HD",
-                    CicloFacturacion = 30,
-                    Activo = true
-                },
-                new PlanSubcripcion
-                {
-                    Id = 3,
-                    Nombre = "Plan Premium",
-                    Precio = 34.90m,
-                    Descripcion = "Experiencia cinematográfica - 5 pantallas, calidad 4K",
-                    CicloFacturacion = 30,
+                    Nombre = "Premium", 
+                    Descripcion = "4 pantallas - Calidad 4K", 
+                    Precio = 29.90m, 
+                    MercadoPagoPlanId = "6f044d2acc954b0798c8440c384945df",
+                    DuracionDias = 30,
                     Activo = true
                 }
             );
+
         }
     }
 }
