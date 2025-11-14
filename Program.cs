@@ -7,6 +7,7 @@ using CloudinaryDotNet;
 using PROYECTOMOVIE.interfaze;
 using PROYECTOMOVIE.Models.config;
 using PROYECTOMOVIE.Services;
+using MercadoPago.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,22 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// CONFIGURACIÓN DE MERCADO PAGO 
+var mercadoPagoAccessToken = builder.Configuration["MercadoPago:AccessToken"] 
+    ?? throw new InvalidOperationException("MercadoPago:AccessToken no configurado en appsettings.json");
+var mercadoPagoPublicKey = builder.Configuration["MercadoPago:PublicKey"] 
+    ?? throw new InvalidOperationException("MercadoPago:PublicKey no configurado en appsettings.json");
+
+// Configurar el SDK de Mercado Pago
+MercadoPagoConfig.AccessToken = mercadoPagoAccessToken;
+builder.Services.AddHttpContextAccessor();
+// ✅ AGREGAR SERVICIO DE MERCADO PAGO
+builder.Services.AddScoped<IMercadoPagoService, MercadoPagoService>();
+
+
+
+
 
 // Configuración de Identity con tu modelo Usuario - MODIFICADO
 builder.Services.AddIdentity<Usuario, IdentityRole>(options =>

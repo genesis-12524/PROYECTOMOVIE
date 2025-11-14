@@ -19,8 +19,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PROYECTOMOVIE.Models;
-
-using System.Security.Claims; 
+using PROYECTOMOVIE.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using PROYECTOMOVIE.interfaze;
 
 namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
 {
@@ -31,101 +33,85 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
         private readonly IUserStore<Usuario> _userStore;
         private readonly IUserEmailStore<Usuario> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        //private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
+        private readonly IMercadoPagoService _mercadoPagoService;
 
         public RegisterModel(
             UserManager<Usuario> userManager,
             IUserStore<Usuario> userStore,
             SignInManager<Usuario> signInManager,
             ILogger<RegisterModel> logger,
-            //IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context,
+            IMercadoPagoService mercadoPagoService)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
-            //_emailSender = emailSender;
             _roleManager = roleManager;
+            _context = context;
+            _mercadoPagoService = mercadoPagoService;
         }
-
-        /// <summary>
-        ///     Esta API es compatible con la infraestructura de interfaz de usuario predeterminada de ASP.NET Core Identity y no está diseñada para usarse
-        ///     Directamente desde tu código. Esta API puede cambiar o eliminarse en futuras versiones.
-        /// </summary>
 
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
 
         public class InputModel
         {
             [Required(ErrorMessage = "El nombre es obligatorio")]
             [StringLength(30, ErrorMessage = "El nombre no puede exceder 50 caracteres")]
             [Display(Name = "Nombre")]
-            public string Nombre { get; set; }     // Usuario
+            public string Nombre { get; set; }
 
-            [Required(ErrorMessage = "El nombre es obligatorio")]
-            [StringLength(50, ErrorMessage = "El nombre no puede exceder 50 caracteres")]
+            [Required(ErrorMessage = "El apellido es obligatorio")]
+            [StringLength(50, ErrorMessage = "El apellido no puede exceder 50 caracteres")]
             [Display(Name = "Apellido")]
-            public string Apellido { get; set; }   // Usuario
+            public string Apellido { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             [EmailAddress]
             [Display(Name = "Correo")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "La {0} debe tener al menos {2} y máximo {1} caracteres.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Contraseña")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirmar Password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Confirmar Contraseña")]
+            [Compare("Password", ErrorMessage = "La contraseña y la confirmación no coinciden.")]
             public string ConfirmPassword { get; set; }
 
             [Display(Name = "Fecha de Registro")]
             public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
-        }
+            [Required(ErrorMessage = "Debe seleccionar un plan")]
+            [Display(Name = "Plan de Suscripción")]
+            public int PlanId { get; set; }
 
+            public List<Plan> Planes { get; set; } = new List<Plan>();
+        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            
+            if (Input == null)
+            {
+                Input = new InputModel();
+            }
+
+            Input.Planes = await _context.Planes.Where(p => p.Activo).ToListAsync();
+            _logger.LogInformation($"Planes cargados: {Input.Planes?.Count ?? 0}");
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -133,8 +119,28 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+            Input.Planes = await _context.Planes.Where(p => p.Activo).ToListAsync();
+
             if (ModelState.IsValid)
             {
+                // Validar que el plan existe y está activo
+                var planSeleccionado = await _context.Planes
+                    .FirstOrDefaultAsync(p => p.Id == Input.PlanId && p.Activo);
+                    
+                if (planSeleccionado == null)
+                {
+                    ModelState.AddModelError("Input.PlanId", "Plan seleccionado no válido o no disponible");
+                    return Page();
+                }
+
+                // Verificar si el email ya existe
+                var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Input.Email", "Ya existe un usuario con este email.");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -142,16 +148,15 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
 
                 user.Nombre = Input.Nombre;
                 user.Apellido = Input.Apellido;
-                user.FechaRegistro = DateTime.Now; //de manera automatica se hace cuando el usuario de registra
+                user.FechaRegistro = DateTime.Now;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-
-
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("Usuario creado exitosamente.");
 
+                    // Crear rol Cliente si no existe
                     if (!await _roleManager.RoleExistsAsync("Cliente"))
                     {
                         await _roleManager.CreateAsync(new IdentityRole("Cliente"));
@@ -159,36 +164,114 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
 
                     await _userManager.AddToRoleAsync(user, "Cliente");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        //$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    // CREAR SUSCRIPCIÓN EN LA BASE DE DATOS
+                    var subscription = new Subscripcion
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        UserId = user.Id,
+                        PlanId = Input.PlanId,
+                        Status = "pending",
+                        FechaInicio = DateTime.UtcNow,
+                        FechaCreacion = DateTime.UtcNow,
+                        SubscriptionIdMercadoPago = ""
+                    };
+
+                    _context.Subscripciones.Add(subscription);
+                    await _context.SaveChangesAsync();
+
+                    // ✅ CORREGIDO: NUEVO ENFOQUE - SUSCRIPCIÓN RECURRENTE
+                    try
+                    {
+                        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                        var returnUrlMercadoPago = $"{baseUrl}/Identity/MercadoPago/Resultado";
+
+                        _logger.LogInformation("=== INICIANDO SUSCRIPCIÓN RECURRENTE ===");
+                        _logger.LogInformation($"Plan: {planSeleccionado.Nombre}, Usuario: {user.Email}");
+                        _logger.LogInformation($"Return URL: {returnUrlMercadoPago}");
+
+                        // ✅ GUARDAR INFORMACIÓN PARA USAR DESPUÉS
+                        HttpContext.Session.SetInt32("CurrentSubscriptionId", subscription.Id);
+                        HttpContext.Session.SetString("CurrentUserId", user.Id);
+                        TempData["CurrentSubscriptionId"] = subscription.Id;
+                        TempData["CurrentUserId"] = user.Id;
+
+                        // ✅ PRIMERO INTENTAR SUSCRIPCIÓN RECURRENTE
+                        _logger.LogInformation("🔄 Intentando crear SUSCRIPCIÓN RECURRENTE...");
+                        var mercadoPagoUrl = await _mercadoPagoService.CreateSubscription(
+                            planSeleccionado, user, returnUrlMercadoPago);
+
+                        _logger.LogInformation($"✅ URL de suscripción recurrente: {mercadoPagoUrl}");
+
+                        if (string.IsNullOrEmpty(mercadoPagoUrl))
+                        {
+                            throw new Exception("MercadoPago no devolvió una URL válida para suscripción recurrente");
+                        }
+
+                        // ✅ GUARDAR INFORMACIÓN TEMPORAL
+                        TempData["SubscriptionId"] = subscription.Id;
+                        TempData["UserId"] = user.Id;
+                        TempData["UserEmail"] = user.Email;
+                        TempData["UserName"] = $"{user.Nombre} {user.Apellido}";
+                        TempData["PlanId"] = Input.PlanId;
+                        TempData["PlanNombre"] = planSeleccionado.Nombre;
+                        TempData["PlanPrecio"] = planSeleccionado.Precio;
+                        TempData["PlanDescripcion"] = planSeleccionado.Descripcion;
+                        TempData["TipoPago"] = "recurrente"; // ✅ Indicar que es suscripción recurrente
+
+                        _logger.LogInformation($"🔀 REDIRIGIENDO A MERCADO PAGO (Suscripción): {mercadoPagoUrl}");
+
+                        // ✅ REDIRIGIR A MERCADO PAGO
+                        return Redirect(mercadoPagoUrl);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        // Redirigir a la vista de Cliente después del registro
-                        return RedirectToAction("Index", "Cliente");
+                        _logger.LogError(ex, "❌ Error con suscripción recurrente, intentando pago único...");
+                        
+                        // ✅ FALLBACK: INTENTAR PAGO ÚNICO
+                        try
+                        {
+                            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                            var returnUrlMercadoPago = $"{baseUrl}/Identity/MercadoPago/Resultado";
+                            var webhookUrl = $"{baseUrl}/Identity/MercadoPago/Webhook";
+
+                            _logger.LogInformation("🔄 Intentando PAGO ÚNICO como fallback...");
+                            
+                            var mercadoPagoUrl = await _mercadoPagoService.CreatePreference(
+                                subscription, user, returnUrlMercadoPago, webhookUrl);
+
+                            _logger.LogInformation($"✅ URL de pago único: {mercadoPagoUrl}");
+
+                            if (string.IsNullOrEmpty(mercadoPagoUrl))
+                            {
+                                throw new Exception("MercadoPago no devolvió una URL válida para pago único");
+                            }
+
+                            TempData["TipoPago"] = "unico"; // ✅ Indicar que es pago único
+
+                            _logger.LogInformation($"🔀 REDIRIGIENDO A MERCADO PAGO (Pago Único): {mercadoPagoUrl}");
+                            return Redirect(mercadoPagoUrl);
+                        }
+                        catch (Exception fallbackEx)
+                        {
+                            _logger.LogError(fallbackEx, "❌ Error también con pago único");
+                            
+                            // Si fallan ambos métodos, marcar suscripción como fallida
+                            subscription.Status = "failed";
+                            await _context.SaveChangesAsync();
+
+                            ModelState.AddModelError(string.Empty, 
+                                "Error al procesar el pago. Tu cuenta fue creada pero la suscripción no pudo activarse. Por favor contacta con soporte.");
+                            return Page();
+                        }
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            Input.Planes = await _context.Planes.Where(p => p.Activo).ToListAsync();
             return Page();
         }
 
@@ -200,9 +283,8 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                throw new InvalidOperationException($"No se puede crear una instancia de '{nameof(Usuario)}'. " +
+                    $"Asegúrate de que '{nameof(Usuario)}' no es una clase abstracta y tiene un constructor sin parámetros.");
             }
         }
 
@@ -210,10 +292,9 @@ namespace PROYECTOMOVIE.Areas.Identity.Pages.Account
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
+                throw new NotSupportedException("El UI por defecto requiere un user store con soporte de email.");
             }
             return (IUserEmailStore<Usuario>)_userStore;
         }
     }
 }
-

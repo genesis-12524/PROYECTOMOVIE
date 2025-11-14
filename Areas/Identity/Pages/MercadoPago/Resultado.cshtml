@@ -1,0 +1,34 @@
+@page
+@model PROYECTOMOVIE.Areas.Identity.Pages.MercadoPago.ResultadoModel
+
+@{
+    ViewData["Title"] = "Resultado del Pago";
+}
+
+<div class="container mt-4">
+    <h2>Resultado del Pago</h2>
+    
+    @if (Model.PagoExitoso)
+    {
+        <div class="alert alert-success">
+            <h4>¡Pago Exitoso!</h4>
+            <p><strong>ID del Pago:</strong> @Model.PaymentId</p>
+            <p><strong>Estado:</strong> @Model.Status</p>
+            <p><strong>Monto:</strong> $@Model.Amount</p>
+            <p><strong>Fecha:</strong> @Model.FechaPago</p>
+        </div>
+        
+        <a href="/" class="btn btn-primary">Volver al Inicio</a>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <h4>Pago Fallido</h4>
+            <p><strong>Estado:</strong> @Model.Status</p>
+            <p><strong>Mensaje:</strong> @Model.Mensaje</p>
+        </div>
+        
+        <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+        <a href="/checkout" class="btn btn-primary">Reintentar Pago</a>
+    }
+</div>

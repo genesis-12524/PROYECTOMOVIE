@@ -42,15 +42,9 @@ namespace PROYECTOMOVIE.Models
 
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
-                
-        // Suscripción (relación 1:1)
-        public virtual UsuarioSuscripcion? Subcripcion { get; set; }
-        
-        // Método de pago guardado
-        public bool HasPaymentMethod { get; set; } = false;
         public virtual ICollection<UsuarioPelicula>? UsuarioPeliculas { get; set; }
 
-        // Propiedad de navegación para suscripciones (1:N por si quieres historial)
-        public virtual ICollection<UsuarioSuscripcion>? Suscripciones { get; set; }
+        // Propiedad de navegación para suscripciones (1:N por si quieres historial
+        public virtual ICollection<Subscripcion> Subscripciones { get; set; }
     }
 }
