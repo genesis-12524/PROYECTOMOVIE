@@ -1,0 +1,179 @@
+@model PROYECTOMOVIE.Models.Lista
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@Model.Nombre - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+
+    <style>
+        html, body { height: 100%; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg-dark); color: var(--light); }
+        main { flex: 1; padding-top: 70px; }
+
+        .header{ position:fixed; top:0; left:0; right:0; z-index:1000; backdrop-filter: blur(6px);
+                 background: linear-gradient(180deg, rgba(2,2,2,0.12), rgba(10,12,14,0.05)); display:flex;
+                 align-items:center; justify-content:space-between; padding:14px 28px; border-bottom:1px solid rgba(255,255,255,0.02);}
+        .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--accent);} 
+        .logo i{ color: var(--accent-2); }
+        .nav-links{display:flex;gap:14px;align-items:left}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:15px}
+        .nav-links a.nav-active, .nav-links a:hover{color:var(--light);transform:translateY(-1px);font-weight:600}
+
+        .detalle-container { padding: 28px 20px; max-width: 1400px; margin: 0 auto; }
+        .detalle-header { background: rgba(20,22,24,0.6); padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #6f42c1; }
+        .btn-back { background: rgba(108, 117, 125, 0.2); color: var(--light); border: 1px solid rgba(108, 117, 125, 0.4); padding: 8px 20px; border-radius: 20px; text-decoration: none; }
+        .btn-back:hover { background: rgba(108, 117, 125, 0.4); color: var(--light); }
+        .btn-edit { background: rgba(111, 66, 193, 0.2); color: var(--light); border: 1px solid rgba(111, 66, 193, 0.5); padding: 8px 20px; border-radius: 20px; text-decoration: none; }
+        .btn-edit:hover { background: rgba(111, 66, 193, 0.4); color: var(--light); }
+
+        .peliculas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; margin-top: 30px; }
+        .pelicula-card { background: rgba(20,22,24,0.7); border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: all 0.3s; }
+        .pelicula-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(111, 66, 193, 0.3); }
+        .pelicula-img { width: 100%; height: 300px; object-fit: cover; }
+        .pelicula-info { padding: 15px; }
+        .pelicula-titulo { font-weight: 600; font-size: 15px; margin-bottom: 8px; color: var(--light); }
+        .pelicula-fecha { font-size: 13px; color: var(--muted); }
+        .btn-remove { background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.4); width: 100%; padding: 8px; border-radius: 8px; font-size: 13px; }
+        .btn-remove:hover { background: rgba(220, 53, 69, 0.4); color: white; }
+
+        .empty-state { text-align: center; padding: 80px 20px; }
+        .empty-state i { font-size: 80px; color: var(--muted); opacity: 0.3; margin-bottom: 20px; }
+        .btn-catalog { background: linear-gradient(135deg, #6f42c1, #59309e); color: white; border: none; padding: 12px 28px; border-radius: 25px; text-decoration: none; display: inline-block; }
+        .btn-catalog:hover { color: white; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4); }
+
+        footer { margin-top: auto; padding: 12px 0; text-align:center; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Lista/Index" class="nav-active">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="detalle-container container">
+            <div class="detalle-header">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="flex-grow-1">
+                        <h2 class="fw-bold mb-2">@Model.Nombre</h2>
+                        @if (!string.IsNullOrEmpty(Model.Descripcion))
+                        {
+                            <p class="text-muted mb-2">@Model.Descripcion</p>
+                        }
+                        <small style="color: var(--muted);">
+                            <i class="fa-solid fa-calendar me-1"></i> Creada el @Model.FechaCreacion.ToString("dd/MM/yyyy")
+                            <span class="mx-2">|</span>
+                            <i class="fa-solid fa-film me-1"></i> @(Model.ListaPeliculas?.Count ?? 0) película(s)
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2>
+                        <a asp-action="Index" class="btn-back">
+                            <i class="fa-solid fa-arrow-left me-2"></i> Volver
+                        </a>
+                        <a asp-action="Editar" asp-route-id="@Model.Id" class="btn-edit">
+                            <i class="fa-solid fa-edit me-2"></i> Editar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.ListaPeliculas != null && Model.ListaPeliculas.Any())
+            {
+                <div class="peliculas-grid">
+                    @foreach (var lp in Model.ListaPeliculas)
+                    {
+                        <div class="pelicula-card">
+                            <img src="@lp.Pelicula?.Imagen_Peli" 
+                                 class="pelicula-img" 
+                                 alt="@lp.Pelicula?.Nombre_Peli" />
+                            <div class="pelicula-info">
+                                <h6 class="pelicula-titulo">@lp.Pelicula?.Nombre_Peli</h6>
+                                <p class="pelicula-fecha mb-3">
+                                    <i class="fa-solid fa-calendar-plus me-1"></i>
+                                    Agregada: @lp.FechaAgregada.ToString("dd/MM/yyyy")
+                                </p>
+                                <button class="btn-remove" onclick="eliminarPelicula(@Model.Id, @lp.PeliculaId)">
+                                    <i class="fa-solid fa-trash me-1"></i> Quitar
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fa-solid fa-film d-block"></i>
+                    <h4 style="color: var(--muted); margin-bottom: 12px;">Esta lista está vacía</h4>
+                    <p style="color: var(--muted); margin-bottom: 24px;">Explora el catálogo y agrega películas a esta lista</p>
+                    <a href="/Cliente/Pelis" class="btn-catalog">
+                        <i class="fa-solid fa-search me-2"></i> Ir al Catálogo
+                    </a>
+                </div>
+            }
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">&copy; 2025 - WatchLenn</div>
+    </footer>
+
+    <!-- Token para AJAX -->
+    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function eliminarPelicula(listaId, peliculaId) {
+            if (confirm('¿Deseas quitar esta película de la lista?')) {
+                $.ajax({
+                    url: '@Url.Action("EliminarPelicula", "Lista")',
+                    type: 'POST',
+                    data: {
+                        listaId: listaId,
+                        peliculaId: peliculaId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(result) {
+                        if (result.success) {
+                            alert('✓ ' + result.message);
+                            location.reload();
+                        } else {
+                            alert('✗ ' + result.message);
+                        }
+                    },
+                    error: function() {
+                        alert('✗ Error al quitar la película. Por favor, intenta nuevamente.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

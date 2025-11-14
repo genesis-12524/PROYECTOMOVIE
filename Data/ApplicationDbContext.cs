@@ -23,6 +23,9 @@ namespace PROYECTOMOVIE.Data
         public DbSet<UsuarioPelicula> UsuarioPeliculas { get; set; }
 
         public DbSet<VideoConfigPortada> VideoConfigPortadas { get; set; }
+
+        public DbSet<Lista> DataLista { get; set; }
+        public DbSet<ListaPelicula> DataListaPelicula { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -147,6 +150,38 @@ namespace PROYECTOMOVIE.Data
                 entity.Property(us => us.MercadoPagoSubscriptionId).HasMaxLength(100);
                 entity.Property(us => us.MercadoPagoPayerId).HasMaxLength(100);
                 entity.Property(us => us.MercadoPagoCardId).HasMaxLength(100);
+            });
+
+            // ========================================
+            // CONFIGURACIÓN DE LISTAS PERSONALIZADAS (NUEVO)
+            // ========================================
+    
+            builder.Entity<Lista>(entity =>
+            {
+                entity.HasKey(l => l.Id);
+                entity.Property(l => l.Nombre).IsRequired().HasMaxLength(100);
+                entity.Property(l => l.Descripcion).HasMaxLength(500);
+                entity.Property(l => l.UsuarioId).IsRequired();
+        
+                entity.HasOne(l => l.Usuario)
+                    .WithMany()
+                    .HasForeignKey(l => l.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ListaPelicula>(entity =>
+            {
+                entity.HasKey(lp => new { lp.ListaId, lp.PeliculaId });
+        
+                entity.HasOne(lp => lp.Lista)
+                    .WithMany(l => l.ListaPeliculas)
+                    .HasForeignKey(lp => lp.ListaId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(lp => lp.Pelicula)
+                    .WithMany()
+                    .HasForeignKey(lp => lp.PeliculaId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // 5. ÍNDICES PARA MEJOR PERFORMANCE

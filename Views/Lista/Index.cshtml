@@ -1,0 +1,224 @@
+@model IEnumerable<PROYECTOMOVIE.Models.Lista>
+
+@{
+    ViewData["Title"] = "Mis Listas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Listas - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PROYECTOMOVIE.styles.css" asp-append-version="true" />
+
+    <style>
+        html, body { height: 100%; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg-dark); color: var(--light); }
+        main { flex: 1; padding-top: 70px; }
+
+        /* header */
+        .header{ position:fixed; top:0; left:0; right:0; z-index:1000; backdrop-filter: blur(6px);
+                 background: linear-gradient(180deg, rgba(2,2,2,0.12), rgba(10,12,14,0.05)); display:flex;
+                 align-items:center; justify-content:space-between; padding:14px 28px; border-bottom:1px solid rgba(255,255,255,0.02);}
+        .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--accent);} 
+        .logo i{ color: var(--accent-2); }
+        .nav-links{display:flex;gap:14px;align-items:left}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:15px}
+        .nav-links a.nav-active, .nav-links a:hover{color:var(--light);transform:translateY(-1px);font-weight:600}
+
+        /* listas */
+        .listas-container { padding: 28px 20px; max-width: 1200px; margin: 0 auto; }
+        .btn-nueva-lista { background-color: #6f42c1; color: #fff; border-radius: 25px; padding: 10px 22px; border: none; transition: all 0.3s; }
+        .btn-nueva-lista:hover { background-color: #59309e; transform: translateY(-2px); }
+
+        .listas-grid { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .lista-card { background: rgba(10,12,14,0.6); padding: 18px; border-radius: 12px; color: var(--light); box-shadow: 0 6px 20px rgba(0,0,0,0.5); transition: transform 0.3s, box-shadow 0.3s; }
+        .lista-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(111, 66, 193, 0.3); }
+        .lista-card h5 { margin-bottom: 8px; font-weight: 600; }
+        .text-muted-custom { color: var(--muted); font-size: 14px; }
+        .badge-custom { font-size: 11px; padding: 4px 10px; border-radius: 12px; }
+        .miniaturas-preview { display: flex; gap: 6px; margin-top: 12px; overflow-x: auto; padding: 4px 0; }
+        .miniaturas-preview::-webkit-scrollbar { height: 4px; }
+        .miniaturas-preview::-webkit-scrollbar-thumb { background: rgba(111, 66, 193, 0.5); border-radius: 4px; }
+        .miniatura-img { width: 60px; height: 90px; object-fit: cover; border-radius: 6px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        .miniatura-mas { width: 60px; height: 90px; background: rgba(111, 66, 193, 0.2); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px dashed rgba(111, 66, 193, 0.5); }
+
+        /* alert messages */
+        .alert-custom { background: rgba(111, 66, 193, 0.15); border-left: 4px solid #6f42c1; color: var(--light); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; }
+
+        /* modal */
+        @@keyframes slideDown { from { transform: translateY(-20px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+        .modal-content { border-radius: 12px; animation: slideDown .28s ease; background: rgba(20,22,24,0.98); border: 1px solid rgba(111, 66, 193, 0.3); }
+        .modal-header { background-color: #6f42c1; color: white; border-top-left-radius: 12px; border-top-right-radius: 12px; border-bottom: none; }
+        .modal-body { background: rgba(20,22,24,0.98); color: var(--light); }
+        .modal-backdrop.show { backdrop-filter: blur(4px); background-color: rgba(0,0,0,0.6); }
+        
+        /* buttons */
+        .btn-outline-custom { color: var(--light); border-color: rgba(111, 66, 193, 0.5); }
+        .btn-outline-custom:hover { background-color: rgba(111, 66, 193, 0.2); border-color: #6f42c1; color: var(--light); }
+        .btn-danger-custom { background: rgba(220, 53, 69, 0.8); border: none; color: white; }
+        .btn-danger-custom:hover { background: rgba(220, 53, 69, 1); }
+
+        footer { margin-top: auto; padding: 12px 0; text-align:center; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Lista/Index" class="nav-active">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="listas-container container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0"><i class="fa-solid fa-list me-2"></i>Mis Listas</h2>
+                <a asp-action="Crear" class="btn-nueva-lista">
+                    <i class="fa-solid fa-plus me-2"></i> Nueva Lista
+                </a>
+            </div>
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert-custom mt-3">
+                    <i class="fa-solid fa-check-circle me-2"></i>@TempData["Message"]
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="listas-grid">
+                    @foreach (var lista in Model)
+                    {
+                        <div class="lista-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0">
+                                    <a asp-action="Detalle" asp-route-id="@lista.Id" class="text-decoration-none" style="color: var(--light);">
+                                        @lista.Nombre
+                                    </a>
+                                </h5>
+                                @if (lista.EsPublica)
+                                {
+                                    <span class="badge bg-success badge-custom">Pública</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary badge-custom">Privada</span>
+                                }
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(lista.Descripcion))
+                            {
+                                <p class="text-muted-custom mb-2">@lista.Descripcion</p>
+                            }
+                            
+                            <div class="text-muted-custom mb-3">
+                                <i class="fa-solid fa-calendar me-1"></i> @lista.FechaCreacion.ToString("dd/MM/yyyy")
+                                <span class="mx-2">|</span>
+                                <i class="fa-solid fa-film me-1"></i> @(lista.ListaPeliculas?.Count ?? 0) película(s)
+                            </div>
+
+                            @if (lista.ListaPeliculas != null && lista.ListaPeliculas.Any())
+                            {
+                                <div class="miniaturas-preview">
+                                    @foreach (var lp in lista.ListaPeliculas.Take(5))
+                                    {
+                                        <img src="@lp.Pelicula?.Imagen_Peli" 
+                                             alt="@lp.Pelicula?.Nombre_Peli" 
+                                             class="miniatura-img"
+                                             title="@lp.Pelicula?.Nombre_Peli" />
+                                    }
+                                    @if (lista.ListaPeliculas.Count > 5)
+                                    {
+                                        <div class="miniatura-mas">
+                                            <span style="font-size: 12px; color: var(--muted);">+@(lista.ListaPeliculas.Count - 5)</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            <div class="d-flex gap-2 mt-3">
+                                <a asp-action="Detalle" asp-route-id="@lista.Id" class="btn btn-outline-custom btn-sm flex-fill">
+                                    <i class="fa-solid fa-eye me-1"></i> Ver
+                                </a>
+                                <a asp-action="Editar" asp-route-id="@lista.Id" class="btn btn-outline-custom btn-sm">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
+                                <button class="btn btn-danger-custom btn-sm" onclick="eliminarLista(@lista.Id)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-5 py-5">
+                    <i class="fa-solid fa-inbox fa-4x mb-3" style="color: var(--muted); opacity: 0.5;"></i>
+                    <h4 style="color: var(--muted);">No tienes listas creadas</h4>
+                    <p class="text-muted-custom mb-4">Crea tu primera lista para organizar tus películas favoritas</p>
+                    <a asp-action="Crear" class="btn-nueva-lista">
+                        <i class="fa-solid fa-plus me-2"></i> Crear Mi Primera Lista
+                    </a>
+                </div>
+            }
+        </section>
+    </main>
+
+    <footer class="border-top footer">
+        <div class="container">&copy; 2025 - WatchLenn</div>
+    </footer>
+
+    <!-- Token para AJAX -->
+    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function eliminarLista(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta lista? Esta acción no se puede deshacer.')) {
+                $.ajax({
+                    url: '@Url.Action("Eliminar", "Lista")/' + id,
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(result) {
+                        if (result.success) {
+                            alert('✓ ' + result.message);
+                            location.reload();
+                        } else {
+                            alert('✗ ' + result.message);
+                        }
+                    },
+                    error: function() {
+                        alert('✗ Error al eliminar la lista. Por favor, intenta nuevamente.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

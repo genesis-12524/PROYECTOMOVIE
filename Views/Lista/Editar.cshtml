@@ -1,0 +1,133 @@
+@model PROYECTOMOVIE.Models.Lista
+
+@{
+    ViewData["Title"] = "Editar Lista";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Lista - WatchLenn</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+
+    <style>
+        html, body { height: 100%; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg-dark); color: var(--light); }
+        main { flex: 1; padding-top: 70px; }
+
+        .header{ position:fixed; top:0; left:0; right:0; z-index:1000; backdrop-filter: blur(6px);
+                 background: linear-gradient(180deg, rgba(2,2,2,0.12), rgba(10,12,14,0.05)); display:flex;
+                 align-items:center; justify-content:space-between; padding:14px 28px; border-bottom:1px solid rgba(255,255,255,0.02);}
+        .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:var(--accent);} 
+        .logo i{ color: var(--accent-2); }
+        .nav-links{display:flex;gap:14px;align-items:left}
+        .nav-links a{color:var(--muted);text-decoration:none;font-size:15px}
+        .nav-links a.nav-active, .nav-links a:hover{color:var(--light);transform:translateY(-1px);font-weight:600}
+
+        .form-container { max-width: 700px; margin: 40px auto; padding: 30px; background: rgba(20,22,24,0.8); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); border: 1px solid rgba(111, 66, 193, 0.2); }
+        .form-header { border-bottom: 2px solid #6f42c1; padding-bottom: 15px; margin-bottom: 25px; }
+        .form-header h3 { color: var(--light); font-weight: 700; margin: 0; }
+        
+        .form-label { color: var(--light); font-weight: 500; margin-bottom: 8px; }
+        .form-control, .form-select { background: rgba(30,32,34,0.6); border: 1px solid rgba(111, 66, 193, 0.3); color: var(--light); padding: 12px; border-radius: 8px; }
+        .form-control:focus, .form-select:focus { background: rgba(30,32,34,0.8); border-color: #6f42c1; box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25); color: var(--light); }
+        .form-control::placeholder { color: var(--muted); }
+        
+        .form-check-input { background-color: rgba(30,32,34,0.6); border-color: rgba(111, 66, 193, 0.5); }
+        .form-check-input:checked { background-color: #6f42c1; border-color: #6f42c1; }
+        .form-check-label { color: var(--light); }
+
+        .btn-primary-custom { background: linear-gradient(135deg, #6f42c1, #59309e); color: white; border: none; padding: 12px 28px; border-radius: 25px; font-weight: 600; transition: all 0.3s; }
+        .btn-primary-custom:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4); }
+        .btn-secondary-custom { background: rgba(108, 117, 125, 0.3); color: var(--light); border: 1px solid rgba(108, 117, 125, 0.5); padding: 12px 28px; border-radius: 25px; }
+        .btn-secondary-custom:hover { background: rgba(108, 117, 125, 0.5); }
+
+        .text-danger { color: #ff6b6b !important; font-size: 14px; margin-top: 5px; }
+        .validation-summary-errors { background: rgba(220, 53, 69, 0.15); border-left: 4px solid #dc3545; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        .validation-summary-errors ul { margin: 0; padding-left: 20px; color: #ff6b6b; }
+
+        footer { margin-top: auto; padding: 12px 0; text-align:center; color: var(--muted); border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo"><i class="fa-solid fa-film"></i>WatchLenn</div>
+        <nav class="nav-links">
+            <a href="/Cliente/Index">Inicio</a>
+            <a href="/Cliente/Pelis">Películas</a>
+            <a href="/Cliente/Series">Series</a>
+            <a href="#">Popular</a>
+            <a href="/Lista/Index" class="nav-active">Mis Listas</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/Cliente/Gemini" class="btn-login">Crea tu historia</a>
+            <div class="user-info">
+                <partial name="_LoginPartial" />
+            </div>
+            <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="form-container">
+                <div class="form-header">
+                    <h3><i class="fa-solid fa-edit me-2"></i>Editar Lista</h3>
+                </div>
+
+                <form asp-action="Editar" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Nombre" class="form-label">
+                            <i class="fa-solid fa-tag me-1"></i> Nombre de la lista *
+                        </label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Descripcion" class="form-label">
+                            <i class="fa-solid fa-align-left me-1"></i> Descripción (opcional)
+                        </label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input asp-for="EsPublica" class="form-check-input" type="checkbox" />
+                        <label asp-for="EsPublica" class="form-check-label">
+                            <i class="fa-solid fa-globe me-1"></i> Hacer esta lista pública
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a asp-action="Index" class="btn-secondary-custom">
+                            <i class="fa-solid fa-times me-2"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn-primary-custom">
+                            <i class="fa-solid fa-save me-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">&copy; 2025 - WatchLenn</div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
