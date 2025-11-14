@@ -258,7 +258,7 @@ main{
     width: 300px; 
     
     /* Define la altura para que sea horizontal (ej. proporción 16:9) */
-    height: 170px; 
+    height: 400px; 
     
     /* Importante: oculta lo que se salga del contenedor */
     overflow: hidden; 
