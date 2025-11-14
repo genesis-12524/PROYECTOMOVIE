@@ -3,16 +3,16 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copiar archivos de proyecto
-COPY ["YourProjectName.csproj", "./"]
-RUN dotnet restore "YourProjectName.csproj"
+COPY ["PROYECTOMOVIE.csproj", "./"]
+RUN dotnet restore "PROYECTOMOVIE.csproj"
 
 # Copiar el código fuente
 COPY . .
-RUN dotnet build "YourProjectName.csproj" -c Release -o /app/build
+RUN dotnet build "PROYECTOMOVIE.csproj" -c Release -o /app/build
 
 # Etapa de publicación
 FROM build AS publish
-RUN dotnet publish "YourProjectName.csproj" -c Release -o /app/publish
+RUN dotnet publish "PROYECTOMOVIE.csproj" -c Release -o /app/publish
 
 # Etapa de ejecución
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
