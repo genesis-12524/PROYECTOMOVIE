@@ -141,12 +141,16 @@ namespace PROYECTOMOVIE.Controllers
                 if (existe)
                     return Json(new { success = false, message = "La película ya está en esta lista" });
 
-                // Obtener el siguiente número de orden
-                var maxOrden = await _context.DataListaPelicula
+                // ✅ SOLUCIÓN: Obtener el máximo orden de forma correcta
+                var peliculasEnLista = await _context.DataListaPelicula
                     .Where(lp => lp.ListaId == listaId)
-                    .Select(lp => lp.Orden)
-                    .DefaultIfEmpty(0)
-                    .MaxAsync();
+                    .ToListAsync();
+
+                int maxOrden = 0;
+                if (peliculasEnLista.Any())
+                {
+                    maxOrden = peliculasEnLista.Max(lp => lp.Orden);
+                }
 
                 var listaPelicula = new ListaPelicula
                 {
@@ -159,10 +163,13 @@ namespace PROYECTOMOVIE.Controllers
                 _context.DataListaPelicula.Add(listaPelicula);
                 await _context.SaveChangesAsync();
 
+                Console.WriteLine($"✅ Película {peliculaId} agregada a lista {listaId}");
+
                 return Json(new { success = true, message = "Película agregada a la lista exitosamente" });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"❌ Error al agregar película: {ex.Message}");
                 return Json(new { success = false, message = "Error al agregar la película: " + ex.Message });
             }
         }
